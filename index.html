@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>定時退社タンゴ</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="定時タンゴ">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👔</text></svg>">
+
+  <!-- SEO -->
+  <meta name="description" content="毎日1問！👔と🍺を並べる論理パズル。バランスよく定時退社しよう。">
+
+  <!-- OGP -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="定時退社タンゴ">
+  <meta property="og:description" content="毎日1問！👔と🍺を並べる論理パズル。バランスよく定時退社しよう。">
+  <meta property="og:image" content="https://teiji-tango.com/icons/ogp.png">
+  <meta property="og:url" content="https://teiji-tango.com">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="定時退社タンゴ">
+  <meta name="twitter:description" content="毎日1問！👔と🍺を並べる論理パズル。">
+  <meta name="twitter:image" content="https://teiji-tango.com/icons/ogp.png">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-inner">
+        <button id="btn-howto" class="btn-howto" aria-label="遊び方">？</button>
+        <h1>定時退社タンゴ</h1>
+        <div class="streak">🔥 <span id="streak-count">0</span>日連続</div>
+      </div>
+      <p class="subtitle">今日もバランスよく定時退社しよう</p>
+    </header>
+
+    <main>
+      <div id="game-area">
+        <div id="puzzle-info">
+          <span id="puzzle-day">Day 1</span>
+          <span id="difficulty"></span>
+          <span id="timer" class="timer-display">0:00</span>
+        </div>
+
+        <nav id="difficulty-tabs">
+          <button class="diff-tab" data-diff="初級">初級</button>
+          <button class="diff-tab" data-diff="中級">中級</button>
+          <button class="diff-tab" data-diff="上級">上級</button>
+        </nav>
+
+        <div id="grid-container">
+          <div id="grid"></div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item">
+            <span class="icon shirt">👔</span> 出社
+          </div>
+          <div class="legend-item">
+            <span class="icon beer">🍺</span> 退社
+          </div>
+        </div>
+
+        <div class="rules-hint">
+          <p>👔も🍺も<strong>3連続はNG</strong>・各行列は<strong>同数</strong></p>
+        </div>
+
+        <div id="controls">
+          <button id="btn-clear" class="btn btn-secondary">リセット</button>
+          <button id="btn-hint"  class="btn btn-hint">💡 ヒント</button>
+          <button id="btn-check" class="btn btn-primary">確認する</button>
+        </div>
+
+        <div id="hint-panel" class="hint-panel hidden">
+          <div class="hint-header">
+            <span class="hint-tech-name"></span>
+            <span class="hint-penalty-badge">+5秒</span>
+            <button id="btn-hint-close" class="hint-close">×</button>
+          </div>
+          <div class="hint-cell-label"></div>
+          <div class="hint-reason-text"></div>
+        </div>
+      </div>
+
+      <!-- 遊び方モーダル -->
+      <div id="howto-modal" class="modal hidden">
+        <div class="modal-content howto-content">
+          <div class="howto-header">
+            <h2>遊び方</h2>
+            <button id="btn-howto-close" class="modal-close">×</button>
+          </div>
+
+          <div class="howto-section">
+            <h3>🎯 目標</h3>
+            <p>👔（出社）と 🍺（退社）を使って、全てのマスを3つのルールに従って埋めよう！</p>
+          </div>
+
+          <div class="howto-section">
+            <h3>👆 操作方法</h3>
+            <p>マスをタップするたびに記号が切り替わります</p>
+            <div class="demo-tap">
+              <span class="demo-cell">　</span>
+              <span class="demo-arrow">→</span>
+              <span class="demo-cell shirt">👔</span>
+              <span class="demo-arrow">→</span>
+              <span class="demo-cell beer">🍺</span>
+              <span class="demo-arrow">→</span>
+              <span class="demo-cell">　</span>
+            </div>
+          </div>
+
+          <div class="howto-section">
+            <h3>ルール① バランス</h3>
+            <p>各行・各列に <strong>👔 と 🍺 がちょうど3個ずつ</strong></p>
+            <div class="demo-rows">
+              <div class="demo-row">
+                <span class="demo-cell shirt">👔</span><span class="demo-cell beer">🍺</span><span class="demo-cell shirt">👔</span><span class="demo-cell beer">🍺</span><span class="demo-cell shirt">👔</span><span class="demo-cell beer">🍺</span>
+                <span class="demo-ok">✅</span>
+              </div>
+              <div class="demo-row">
+                <span class="demo-cell shirt">👔</span><span class="demo-cell shirt">👔</span><span class="demo-cell shirt">👔</span><span class="demo-cell shirt">👔</span><span class="demo-cell beer">🍺</span><span class="demo-cell beer">🍺</span>
+                <span class="demo-ng">❌ 偏りすぎ</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="howto-section">
+            <h3>ルール② 3連続NG</h3>
+            <p>同じ記号が <strong>3つ以上連続してはいけない</strong>（行・列どちらも）</p>
+            <div class="demo-rows">
+              <div class="demo-row">
+                <span class="demo-cell beer err">🍺</span><span class="demo-cell beer err">🍺</span><span class="demo-cell beer err">🍺</span><span class="demo-cell shirt">👔</span><span class="demo-dots">…</span>
+                <span class="demo-ng">❌</span>
+              </div>
+              <div class="demo-row">
+                <span class="demo-cell beer">🍺</span><span class="demo-cell beer">🍺</span><span class="demo-cell shirt">👔</span><span class="demo-cell shirt">👔</span><span class="demo-dots">…</span>
+                <span class="demo-ok">✅</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="howto-section">
+            <h3>ルール③ 制約マーカー</h3>
+            <p>マスの境界に表示されるマークに従う</p>
+            <div class="demo-constraints">
+              <div class="demo-con-row">
+                <div class="demo-pair">
+                  <span class="demo-cell shirt">👔</span>
+                  <span class="demo-badge eq">＝</span>
+                  <span class="demo-cell shirt">👔</span>
+                </div>
+                <span class="demo-con-desc"><strong>＝</strong> 同じ記号</span>
+              </div>
+              <div class="demo-con-row">
+                <div class="demo-pair">
+                  <span class="demo-cell shirt">👔</span>
+                  <span class="demo-badge neq">×</span>
+                  <span class="demo-cell beer">🍺</span>
+                </div>
+                <span class="demo-con-desc"><strong>×</strong> 違う記号</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="howto-section">
+            <h3>💡 ヒント機能</h3>
+            <p>「💡 ヒント」ボタンを押すと、次に置くべきマスとその<strong>理由</strong>を教えてもらえます。</p>
+            <p class="howto-note">⚠️ 1回使うごとに <strong>+5秒</strong> のペナルティがあります</p>
+          </div>
+
+          <div class="howto-section">
+            <h3>⏱ タイマー &amp; シェア</h3>
+            <p>ゲーム開始と同時にタイマーがスタート。クリア後はタイムとグリッドをSNSにシェアできます！</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-modal" class="modal hidden">
+        <div class="modal-content">
+          <div id="result-emoji" class="result-emoji"></div>
+          <h2 id="result-title"></h2>
+          <p id="result-message"></p>
+          <div id="share-text" class="share-text"></div>
+          <button id="btn-share" class="btn btn-share">📤 結果をシェア</button>
+          <button id="btn-next" class="btn btn-primary">次のパズルへ</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/puzzles.js"></script>
+  <script src="js/solver.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "定時退社タンゴ",
+  "short_name": "定時タンゴ",
+  "description": "毎日1問！👔と🍺を並べる論理パズル。バランスよく定時退社しよう",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
