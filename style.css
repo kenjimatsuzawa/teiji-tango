@@ -285,12 +285,47 @@ h1 {
 }
 
 /* ===== タイマー ===== */
+.timer-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
 .timer-display {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-sub);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+}
+
+.best-time-display {
+  font-size: 0.68rem;
+  color: var(--beer-color);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+/* ===== 結果モーダル: ベストタイム ===== */
+.result-best {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  margin-bottom: 12px;
+  min-height: 1.2em;
+}
+
+.result-best.new-record {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--beer-color);
+  animation: newRecord 0.5s ease;
+}
+
+@keyframes newRecord {
+  0%   { transform: scale(0.8); opacity: 0; }
+  60%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
 }
 
 /* ===== コントロール ===== */

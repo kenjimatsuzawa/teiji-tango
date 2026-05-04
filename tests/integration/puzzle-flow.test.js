@@ -233,6 +233,70 @@ describe('全 150 問: ヒント駆動クリア検証', () => {
   );
 });
 
+// ─── ベストタイム (純粋関数として抽出して検証) ───────────────
+
+describe('ベストタイム ロジック', () => {
+  // localStorage を簡易 mock
+  let store;
+  beforeEach(() => {
+    store = {};
+    global.localStorage = {
+      getItem:    k      => store[k] ?? null,
+      setItem:    (k, v) => { store[k] = String(v); },
+      removeItem: k      => { delete store[k]; },
+    };
+  });
+
+  // app.js の getBestTime / tryUpdateBestTime と同等のロジックを直接テスト
+  function getBestTime(diff) {
+    const v = localStorage.getItem(`bestTime_${diff}`);
+    return v !== null ? parseInt(v, 10) : null;
+  }
+  function tryUpdateBestTime(diff, secs) {
+    const cur = getBestTime(diff);
+    if (cur === null || secs < cur) {
+      localStorage.setItem(`bestTime_${diff}`, secs);
+      return true;
+    }
+    return false;
+  }
+
+  test('初回はベストタイムが null', () => {
+    expect(getBestTime('初級')).toBeNull();
+  });
+
+  test('初回クリアで保存され true を返す', () => {
+    expect(tryUpdateBestTime('初級', 120)).toBe(true);
+    expect(getBestTime('初級')).toBe(120);
+  });
+
+  test('より速いタイムで更新される', () => {
+    tryUpdateBestTime('初級', 120);
+    expect(tryUpdateBestTime('初級', 90)).toBe(true);
+    expect(getBestTime('初級')).toBe(90);
+  });
+
+  test('遅いタイムでは更新されず false を返す', () => {
+    tryUpdateBestTime('初級', 90);
+    expect(tryUpdateBestTime('初級', 120)).toBe(false);
+    expect(getBestTime('初級')).toBe(90);
+  });
+
+  test('同タイムでは更新されず false を返す', () => {
+    tryUpdateBestTime('初級', 90);
+    expect(tryUpdateBestTime('初級', 90)).toBe(false);
+  });
+
+  test('難易度ごとに独立して記録される', () => {
+    tryUpdateBestTime('初級', 60);
+    tryUpdateBestTime('中級', 180);
+    tryUpdateBestTime('上級', 300);
+    expect(getBestTime('初級')).toBe(60);
+    expect(getBestTime('中級')).toBe(180);
+    expect(getBestTime('上級')).toBe(300);
+  });
+});
+
 // ─── ヘルパー ────────────────────────────────────────────────
 
 function findEmpty(game) {

@@ -49,7 +49,10 @@
         <div id="puzzle-info">
           <span id="puzzle-day">Day 1</span>
           <span id="difficulty"></span>
-          <span id="timer" class="timer-display">0:00</span>
+          <div class="timer-group">
+            <span id="timer" class="timer-display">0:00</span>
+            <span id="best-time" class="best-time-display"></span>
+          </div>
         </div>
 
         <nav id="difficulty-tabs">
@@ -191,6 +194,7 @@
           <div id="result-emoji" class="result-emoji"></div>
           <h2 id="result-title"></h2>
           <p id="result-message"></p>
+          <div id="result-best" class="result-best"></div>
           <div id="share-text" class="share-text"></div>
           <button id="btn-share" class="btn btn-share">📤 結果をシェア</button>
           <button id="btn-next" class="btn btn-primary">次のパズルへ</button>

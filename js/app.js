@@ -15,6 +15,28 @@ let hintTargetCell = null;
 
 const SYMBOLS = { 0: '', 1: '👔', 2: '🍺' };
 
+// ─── ベストタイム ────────────────────────────
+function getBestTime(diff) {
+  const v = localStorage.getItem(`bestTime_${diff}`);
+  return v !== null ? parseInt(v, 10) : null;
+}
+
+// 更新できたとき true を返す
+function tryUpdateBestTime(diff, secs) {
+  const current = getBestTime(diff);
+  if (current === null || secs < current) {
+    localStorage.setItem(`bestTime_${diff}`, secs);
+    return true;
+  }
+  return false;
+}
+
+function renderBestTime(diff) {
+  const best = getBestTime(diff);
+  const el = document.getElementById('best-time');
+  el.textContent = best !== null ? `ベスト ${formatTime(best)}` : '';
+}
+
 // ─── 完了トラッキング ─────────────────────────
 function getTodayKey(diff) {
   return `done_${diff}_${new Date().toDateString()}`;
@@ -53,6 +75,7 @@ function loadDifficulty(difficulty) {
   document.getElementById('difficulty').textContent = `手がかり${initialCount}個`;
 
   renderDifficultyTabs();
+  renderBestTime(difficulty);
   hideHintPanel();
   updateUndoButton();
   renderGrid();
@@ -230,6 +253,19 @@ function showResult(won) {
     title.textContent = '定時退社！';
     const hintNote = hintsUsed > 0 ? `（ヒント${hintsUsed}回使用）` : '';
     msg.textContent = `お疲れ様でした！ ${formatTime(timerSecs)} でクリア${hintNote}`;
+
+    const isNewBest = tryUpdateBestTime(currentDifficulty, timerSecs);
+    renderBestTime(currentDifficulty);
+    const bestEl = document.getElementById('result-best');
+    if (isNewBest) {
+      bestEl.textContent = `🏆 新記録！ ${formatTime(timerSecs)}`;
+      bestEl.className = 'result-best new-record';
+    } else {
+      const best = getBestTime(currentDifficulty);
+      bestEl.textContent = `ベストタイム ${formatTime(best)}`;
+      bestEl.className = 'result-best';
+    }
+
     saveStreak();
     const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed);
     shareText.textContent = text;
@@ -238,6 +274,7 @@ function showResult(won) {
     emoji.textContent = '😢';
     title.textContent = '残業確定...';
     msg.textContent   = 'どこかバランスが崩れています。もう一度確認してみよう！';
+    document.getElementById('result-best').textContent = '';
     shareText.textContent = '';
     document.getElementById('btn-share').style.display = 'none';
   }
