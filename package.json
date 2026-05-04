@@ -1,0 +1,20 @@
+{
+  "name": "teiji-tango",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "generate": "node scripts/generate-puzzles.js",
+    "validate": "node scripts/validate-puzzles.js"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testMatch": ["**/tests/**/*.test.js"],
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": ["js/**/*.js", "scripts/**/*.js"]
+  }
+}
