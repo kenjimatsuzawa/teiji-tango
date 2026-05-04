@@ -14,6 +14,7 @@ class TangoGame {
     this.constraints = puzzle.constraints;
     this.fixed = puzzle.initial.map(row => row.map(v => v !== EMPTY));
     this.solveSteps = TangoSolver.computeSolveSteps(puzzle.initial, puzzle.size, puzzle.constraints);
+    this.history = [];
   }
 
   // 次に打つべきヒントステップを返す（ユーザーが未達成の最初のステップ）
@@ -27,12 +28,25 @@ class TangoGame {
   toggle(row, col) {
     if (this.fixed[row][col]) return false;
     const cur = this.grid[row][col];
+    this.history.push({ row, col, prev: cur });
     this.grid[row][col] = cur === EMPTY ? SHIRT : cur === SHIRT ? BEER : EMPTY;
     return true;
   }
 
+  undo() {
+    if (this.history.length === 0) return false;
+    const { row, col, prev } = this.history.pop();
+    this.grid[row][col] = prev;
+    return true;
+  }
+
+  canUndo() {
+    return this.history.length > 0;
+  }
+
   reset() {
     this.grid = this.puzzle.initial.map(row => [...row]);
+    this.history = [];
   }
 
   isFilled() {

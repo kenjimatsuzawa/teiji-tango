@@ -302,10 +302,10 @@ h1 {
 
 .btn {
   flex: 1;
-  padding: 14px;
+  padding: 14px 8px;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.1s ease, opacity 0.15s;
@@ -331,6 +331,13 @@ h1 {
   color: var(--beer-color);
   border: 1.5px solid var(--beer-color);
 }
+
+.btn-undo:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.btn-undo:active:not(:disabled) { transform: scale(0.96); }
 
 .btn-share {
   background: linear-gradient(135deg, #1da1f2, #0d8ecf);

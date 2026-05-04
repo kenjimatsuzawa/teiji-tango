@@ -362,6 +362,92 @@ describe('getNextHint', () => {
   });
 });
 
+// ─── undo / canUndo ─────────────────────────────────────────
+
+describe('undo / canUndo', () => {
+  test('初期状態では canUndo=false', () => {
+    expect(makeGame().canUndo()).toBe(false);
+  });
+
+  test('toggle 後に canUndo=true', () => {
+    const game = makeGame();
+    const [r, c] = findEmpty(game);
+    game.toggle(r, c);
+    expect(game.canUndo()).toBe(true);
+  });
+
+  test('undo で直前のマスが元の値に戻る', () => {
+    const game = makeGame();
+    const [r, c] = findEmpty(game);
+    const before = game.grid[r][c]; // EMPTY
+    game.toggle(r, c);              // → SHIRT
+    game.undo();
+    expect(game.grid[r][c]).toBe(before);
+  });
+
+  test('undo 後に canUndo=false（1手だけの場合）', () => {
+    const game = makeGame();
+    const [r, c] = findEmpty(game);
+    game.toggle(r, c);
+    game.undo();
+    expect(game.canUndo()).toBe(false);
+  });
+
+  test('複数手の undo は1手ずつ戻る', () => {
+    const game = makeGame();
+    const empties = [];
+    for (let row = 0; row < 6 && empties.length < 3; row++)
+      for (let col = 0; col < 6 && empties.length < 3; col++)
+        if (!game.fixed[row][col]) empties.push([row, col]);
+
+    const snapshots = [];
+    for (const [r, c] of empties) {
+      snapshots.push(game.grid.map(row => [...row]));
+      game.toggle(r, c);
+    }
+
+    // 逆順に undo して各スナップショットに戻るか確認
+    for (let i = empties.length - 1; i >= 0; i--) {
+      game.undo();
+      expect(game.grid).toEqual(snapshots[i]);
+    }
+  });
+
+  test('undo は fixed マスには影響しない', () => {
+    const game = makeGame();
+    const [r, c] = findFixed(game);
+    const before = game.grid[r][c];
+    game.toggle(r, c); // fixed なので無視される
+    game.undo();       // undo しても何も起きない（履歴に積まれていない）
+    expect(game.grid[r][c]).toBe(before);
+  });
+
+  test('undo の戻り値: 履歴あり→true, なし→false', () => {
+    const game = makeGame();
+    expect(game.undo()).toBe(false);
+    const [r, c] = findEmpty(game);
+    game.toggle(r, c);
+    expect(game.undo()).toBe(true);
+  });
+
+  test('reset 後は canUndo=false', () => {
+    const game = makeGame();
+    const [r, c] = findEmpty(game);
+    game.toggle(r, c);
+    game.reset();
+    expect(game.canUndo()).toBe(false);
+  });
+
+  test('reset 後に undo しても状態は変わらない', () => {
+    const game = makeGame();
+    const [r, c] = findEmpty(game);
+    game.toggle(r, c);
+    game.reset();
+    game.undo();
+    expect(game.grid).toEqual(EASY_P.initial.map(row => [...row]));
+  });
+});
+
 // ─── buildShareText ──────────────────────────────────────────
 
 describe('buildShareText', () => {

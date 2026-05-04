@@ -54,6 +54,7 @@ function loadDifficulty(difficulty) {
 
   renderDifficultyTabs();
   hideHintPanel();
+  updateUndoButton();
   renderGrid();
 
   if (!isCompletedToday(difficulty)) {
@@ -165,10 +166,15 @@ function renderConstraints() {
   });
 }
 
+function updateUndoButton() {
+  document.getElementById('btn-undo').disabled = !game.canUndo();
+}
+
 function onCellClick(r, c) {
   hintTargetCell = null;
 
   if (!game.toggle(r, c)) return;
+  updateUndoButton();
   renderGrid();
 
   if (game.isFilled()) {
@@ -278,8 +284,16 @@ document.addEventListener('DOMContentLoaded', () => {
     stopTimer();
     hintsUsed = 0;
     hideHintPanel();
+    updateUndoButton();
     renderGrid();
     if (!isCompletedToday(currentDifficulty)) startTimer();
+  });
+
+  document.getElementById('btn-undo').addEventListener('click', () => {
+    if (!game.undo()) return;
+    hintTargetCell = null;
+    updateUndoButton();
+    renderGrid();
   });
 
   document.getElementById('btn-hint').addEventListener('click', () => {
