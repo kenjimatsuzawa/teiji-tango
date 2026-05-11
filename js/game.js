@@ -12,9 +12,20 @@ class TangoGame {
     this.grid = puzzle.initial.map(row => [...row]);
     this.solution = puzzle.solution;
     this.constraints = puzzle.constraints;
+    this.walls = puzzle.walls || [];
     this.fixed = puzzle.initial.map(row => row.map(v => v !== EMPTY));
-    this.solveSteps = TangoSolver.computeSolveSteps(puzzle.initial, puzzle.size, puzzle.constraints);
+    this.solveSteps = TangoSolver.computeSolveSteps(puzzle.initial, puzzle.size, puzzle.constraints, this.walls, !!puzzle.hasRegions, !!puzzle.hasX, puzzle.cages || []);
     this.history = [];
+    // O(1) wall lookup: "r1,c1:r2,c2"
+    this._wallSet = new Set();
+    for (const w of this.walls) {
+      this._wallSet.add(`${w.r1},${w.c1}:${w.r2},${w.c2}`);
+      this._wallSet.add(`${w.r2},${w.c2}:${w.r1},${w.c1}`);
+    }
+  }
+
+  _hasWall(r1, c1, r2, c2) {
+    return this._wallSet.has(`${r1},${c1}:${r2},${c2}`);
   }
 
   // 次に打つべきヒントステップを返す（ユーザーが未達成の最初のステップ）
@@ -53,18 +64,66 @@ class TangoGame {
     return this.grid.every(row => row.every(v => v !== EMPTY));
   }
 
-  // 同じ値が3つ以上連続していないかチェック
+  // 同じ値が3つ以上連続していないかチェック（壁をまたぐ連続は無視）
   checkNoTriple() {
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size - 2; c++) {
+        if (this._hasWall(r,c,r,c+1) || this._hasWall(r,c+1,r,c+2)) continue;
         const v = this.grid[r][c];
         if (v !== EMPTY && v === this.grid[r][c+1] && v === this.grid[r][c+2]) return false;
       }
     }
     for (let c = 0; c < this.size; c++) {
       for (let r = 0; r < this.size - 2; r++) {
+        if (this._hasWall(r,c,r+1,c) || this._hasWall(r+1,c,r+2,c)) continue;
         const v = this.grid[r][c];
         if (v !== EMPTY && v === this.grid[r+1][c] && v === this.grid[r+2][c]) return false;
+      }
+    }
+    return true;
+  }
+
+  // 各枠内の🍺数が指定通りかチェック
+  checkKillerCages() {
+    if (!this.puzzle.hasKiller) return true;
+    for (const cage of this.puzzle.cages) {
+      const beerCount = cage.cells.filter(({ r, c }) => this.grid[r][c] === BEER).length;
+      if (beerCount !== cage.beerCount) return false;
+    }
+    return true;
+  }
+
+  // 主対角線・副対角線も 3vs3 かつ 3連続NGかチェック
+  checkDiagonals() {
+    if (!this.puzzle.hasX) return true;
+    const half = this.size / 2;
+    const mainDiag = Array.from({ length: this.size }, (_, k) => this.grid[k][k]);
+    const antiDiag = Array.from({ length: this.size }, (_, k) => this.grid[k][this.size-1-k]);
+    for (const diag of [mainDiag, antiDiag]) {
+      if (diag.filter(v => v === SHIRT).length !== half) return false;
+      if (diag.filter(v => v === BEER).length  !== half) return false;
+      for (let i = 0; i < this.size - 2; i++) {
+        const v = diag[i];
+        if (v !== EMPTY && v === diag[i+1] && v === diag[i+2]) return false;
+      }
+    }
+    return true;
+  }
+
+  // 各エリア（2×3ブロック）で👔と🍺が同数かチェック
+  checkRegionBalance() {
+    if (!this.puzzle.hasRegions) return true;
+    const half = this.size / 2;
+    for (let ri = 0; ri < this.size / 2; ri++) {
+      for (let ci = 0; ci < this.size / 3; ci++) {
+        let shirts = 0, beers = 0;
+        for (let r = ri * 2; r < ri * 2 + 2; r++) {
+          for (let c = ci * 3; c < ci * 3 + 3; c++) {
+            if (this.grid[r][c] === SHIRT) shirts++;
+            if (this.grid[r][c] === BEER)  beers++;
+          }
+        }
+        if (shirts !== half || beers !== half) return false;
       }
     }
     return true;
@@ -105,9 +164,10 @@ class TangoGame {
   getErrors() {
     const errors = new Set();
 
-    // 3連続チェック
+    // 3連続チェック（壁をまたぐ連続は無視）
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size - 2; c++) {
+        if (this._hasWall(r,c,r,c+1) || this._hasWall(r,c+1,r,c+2)) continue;
         const v = this.grid[r][c];
         if (v !== EMPTY && v === this.grid[r][c+1] && v === this.grid[r][c+2]) {
           errors.add(`${r},${c}`); errors.add(`${r},${c+1}`); errors.add(`${r},${c+2}`);
@@ -116,6 +176,7 @@ class TangoGame {
     }
     for (let c = 0; c < this.size; c++) {
       for (let r = 0; r < this.size - 2; r++) {
+        if (this._hasWall(r,c,r+1,c) || this._hasWall(r+1,c,r+2,c)) continue;
         const v = this.grid[r][c];
         if (v !== EMPTY && v === this.grid[r+1][c] && v === this.grid[r+2][c]) {
           errors.add(`${r},${c}`); errors.add(`${r+1},${c}`); errors.add(`${r+2},${c}`);
@@ -137,17 +198,75 @@ class TangoGame {
       }
     }
 
+    // 枠エラー（🍺 or 👔 が上限を超えた）
+    if (this.puzzle.hasKiller) {
+      for (const cage of this.puzzle.cages) {
+        let beerCount = 0, shirtCount = 0;
+        for (const { r, c } of cage.cells) {
+          if (this.grid[r][c] === BEER) beerCount++;
+          else if (this.grid[r][c] === SHIRT) shirtCount++;
+        }
+        const maxBeer  = cage.beerCount;
+        const maxShirt = cage.cells.length - cage.beerCount;
+        if (beerCount > maxBeer || shirtCount > maxShirt) {
+          for (const { r, c } of cage.cells) {
+            if (this.grid[r][c] !== EMPTY) errors.add(`${r},${c}`);
+          }
+        }
+      }
+    }
+
+    // 対角線エラー（3連続 または バランス超過）
+    if (this.puzzle.hasX) {
+      const diags = [
+        Array.from({ length: this.size }, (_, k) => [k, k]),
+        Array.from({ length: this.size }, (_, k) => [k, this.size-1-k]),
+      ];
+      for (const cells of diags) {
+        // 3連続
+        for (let i = 0; i < cells.length - 2; i++) {
+          const [r0,c0] = cells[i], [r1,c1] = cells[i+1], [r2,c2] = cells[i+2];
+          const v = this.grid[r0][c0];
+          if (v !== EMPTY && v === this.grid[r1][c1] && v === this.grid[r2][c2]) {
+            errors.add(`${r0},${c0}`); errors.add(`${r1},${c1}`); errors.add(`${r2},${c2}`);
+          }
+        }
+        // バランス超過（4個以上）
+        for (const v of [SHIRT, BEER]) {
+          const over = cells.filter(([r,c]) => this.grid[r][c] === v);
+          if (over.length > this.size / 2) over.forEach(([r,c]) => errors.add(`${r},${c}`));
+        }
+      }
+    }
+
+    // エリアバランスエラー（4個以上は超過）
+    if (this.puzzle.hasRegions) {
+      for (let ri = 0; ri < this.size / 2; ri++) {
+        for (let ci = 0; ci < this.size / 3; ci++) {
+          for (const v of [SHIRT, BEER]) {
+            const cells = [];
+            for (let r = ri * 2; r < ri * 2 + 2; r++) {
+              for (let c = ci * 3; c < ci * 3 + 3; c++) {
+                if (this.grid[r][c] === v) cells.push(`${r},${c}`);
+              }
+            }
+            if (cells.length > this.size / 2) cells.forEach(k => errors.add(k));
+          }
+        }
+      }
+    }
+
     return errors;
   }
 
   isComplete() {
-    return this.isFilled() && this.checkNoTriple() && this.checkBalance() && this.checkConstraints();
+    return this.isFilled() && this.checkNoTriple() && this.checkBalance() && this.checkConstraints() && this.checkRegionBalance() && this.checkDiagonals() && this.checkKillerCages();
   }
 
   // シェア用テキスト生成
-  buildShareText(puzzleDay, elapsedSecs, hintsUsed) {
+  buildShareText(puzzleDay, elapsedSecs, hintsUsed, sym1 = '👔', sym2 = '🍺') {
     const lines = this.grid.map(row =>
-      row.map(v => v === SHIRT ? '👔' : v === BEER ? '🍺' : '⬜').join('')
+      row.map(v => v === SHIRT ? sym1 : v === BEER ? sym2 : '⬜').join('')
     );
     const m = Math.floor(elapsedSecs / 60);
     const s = (elapsedSecs % 60).toString().padStart(2, '0');

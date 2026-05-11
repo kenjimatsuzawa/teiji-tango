@@ -39,7 +39,10 @@
       <div class="header-inner">
         <button id="btn-howto" class="btn-howto" aria-label="遊び方">？</button>
         <h1>定時退社タンゴ</h1>
-        <div class="streak">🔥 <span id="streak-count">0</span>日連続</div>
+        <div class="header-right">
+          <div class="streak">🔥 <span id="streak-count">0</span>日連続</div>
+          <button id="btn-ach" class="btn-ach" aria-label="実績">🏅</button>
+        </div>
       </div>
       <p class="subtitle">今日もバランスよく定時退社しよう</p>
     </header>
@@ -55,6 +58,14 @@
           </div>
         </div>
 
+        <nav id="mode-tabs">
+          <button class="mode-tab mode-active" data-mode="normal">通常</button>
+          <button class="mode-tab" data-mode="wall">🧱 壁あり</button>
+          <button class="mode-tab" data-mode="region">🗂️ エリア</button>
+          <button class="mode-tab" data-mode="x">✕ Xタンゴ</button>
+          <button class="mode-tab" data-mode="killer">🔪 キラー</button>
+        </nav>
+
         <nav id="difficulty-tabs">
           <button class="diff-tab" data-diff="初級">初級</button>
           <button class="diff-tab" data-diff="中級">中級</button>
@@ -67,22 +78,35 @@
 
         <div class="legend">
           <div class="legend-item">
-            <span class="icon shirt">👔</span> 出社
+            <span id="legend-sym1" class="icon shirt">👔</span> <span id="legend-label1">出社</span>
           </div>
           <div class="legend-item">
-            <span class="icon beer">🍺</span> 退社
+            <span id="legend-sym2" class="icon beer">🍺</span> <span id="legend-label2">退社</span>
           </div>
+        </div>
+
+        <div class="theme-switcher">
+          <button class="theme-btn theme-active" data-theme="work">👔🍺</button>
+          <button class="theme-btn" data-theme="sushi">🍣🍵</button>
+          <button class="theme-btn" data-theme="fox">🦊⛩️</button>
         </div>
 
         <div class="rules-hint">
-          <p>👔も🍺も<strong>3連続はNG</strong>・各行列は<strong>同数</strong></p>
+          <p>2種類の記号は<strong>3連続はNG</strong>・各行列は<strong>同数</strong></p>
         </div>
 
         <div id="controls">
-          <button id="btn-clear" class="btn btn-secondary">リセット</button>
-          <button id="btn-undo"  class="btn btn-secondary btn-undo" disabled>↩ 戻す</button>
-          <button id="btn-hint"  class="btn btn-hint">💡 ヒント</button>
-          <button id="btn-check" class="btn btn-primary">確認する</button>
+          <button id="btn-clear"     class="btn btn-secondary">リセット</button>
+          <button id="btn-undo"      class="btn btn-secondary btn-undo" disabled>↩ 戻す</button>
+          <button id="btn-tentative" class="btn btn-tentative">🔍 仮置き</button>
+          <button id="btn-hint"      class="btn btn-hint">💡 ヒント</button>
+          <button id="btn-check"     class="btn btn-primary">確認する</button>
+        </div>
+
+        <div id="tentative-panel" class="tentative-panel hidden">
+          <span class="tentative-label">🔍 仮置きモード中</span>
+          <button id="btn-tentative-confirm" class="btn btn-tentative-confirm">✅ 確定</button>
+          <button id="btn-tentative-discard" class="btn btn-tentative-discard">❌ 破棄</button>
         </div>
 
         <div id="hint-panel" class="hint-panel hidden">
@@ -177,6 +201,47 @@
           </div>
 
           <div class="howto-section">
+            <h3>🔪 キラータンゴモード</h3>
+            <p>グリッドが点線の<strong>枠</strong>で囲まれます。各枠の左上の数字が、<strong>その枠の中にある🍺の個数</strong>です！</p>
+            <div class="demo-killer-wrap">
+              <div class="demo-killer-label">2</div>
+              <div class="demo-killer-cells">
+                <span class="demo-cell beer">🍺</span>
+                <span class="demo-cell shirt">👔</span>
+                <span class="demo-cell beer">🍺</span>
+              </div>
+              <span class="demo-ok">✅ 🍺が2個</span>
+            </div>
+            <p class="howto-note">ヒント数字がない代わりに、初期配置は全て空マスからスタート！</p>
+          </div>
+
+          <div class="howto-section">
+            <h3>✕ Xタンゴモード（追加ルール）</h3>
+            <p>紫でハイライトされた<strong>2本の対角線</strong>にも、👔と🍺が<strong>3個ずつ</strong>・<strong>3連続NG</strong>のルールが加わります！</p>
+            <div class="demo-x-grid">
+              <div class="demo-x-cell diag-demo main">↘</div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell diag-demo anti">↙</div>
+              <div class="demo-x-cell"></div><div class="demo-x-cell diag-demo main">↘</div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell diag-demo anti">↙</div><div class="demo-x-cell"></div>
+              <div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell diag-demo both">✕</div><div class="demo-x-cell diag-demo both">✕</div><div class="demo-x-cell"></div><div class="demo-x-cell"></div>
+              <div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell diag-demo both">✕</div><div class="demo-x-cell diag-demo both">✕</div><div class="demo-x-cell"></div><div class="demo-x-cell"></div>
+              <div class="demo-x-cell"></div><div class="demo-x-cell diag-demo anti">↙</div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell diag-demo main">↘</div><div class="demo-x-cell"></div>
+              <div class="demo-x-cell diag-demo anti">↙</div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell"></div><div class="demo-x-cell diag-demo main">↘</div>
+            </div>
+          </div>
+
+          <div class="howto-section">
+            <h3>🗂️ エリアモード（追加ルール）</h3>
+            <p>グリッドが6つのエリア（2行×3列）に分かれます。<strong>各エリアにも👔と🍺がちょうど3個ずつ</strong>！</p>
+            <div class="demo-region-grid">
+              <div class="demo-region r0c0">①</div><div class="demo-region r0c0">①</div><div class="demo-region r0c0">①</div><div class="demo-region r0c1">②</div><div class="demo-region r0c1">②</div><div class="demo-region r0c1">②</div>
+              <div class="demo-region r0c0">①</div><div class="demo-region r0c0">①</div><div class="demo-region r0c0">①</div><div class="demo-region r0c1">②</div><div class="demo-region r0c1">②</div><div class="demo-region r0c1">②</div>
+              <div class="demo-region r1c0">③</div><div class="demo-region r1c0">③</div><div class="demo-region r1c0">③</div><div class="demo-region r1c1">④</div><div class="demo-region r1c1">④</div><div class="demo-region r1c1">④</div>
+              <div class="demo-region r1c0">③</div><div class="demo-region r1c0">③</div><div class="demo-region r1c0">③</div><div class="demo-region r1c1">④</div><div class="demo-region r1c1">④</div><div class="demo-region r1c1">④</div>
+              <div class="demo-region r2c0">⑤</div><div class="demo-region r2c0">⑤</div><div class="demo-region r2c0">⑤</div><div class="demo-region r2c1">⑥</div><div class="demo-region r2c1">⑥</div><div class="demo-region r2c1">⑥</div>
+              <div class="demo-region r2c0">⑤</div><div class="demo-region r2c0">⑤</div><div class="demo-region r2c0">⑤</div><div class="demo-region r2c1">⑥</div><div class="demo-region r2c1">⑥</div><div class="demo-region r2c1">⑥</div>
+            </div>
+          </div>
+
+          <div class="howto-section">
             <h3>💡 ヒント機能</h3>
             <p>「💡 ヒント」ボタンを押すと、次に置くべきマスとその<strong>理由</strong>を教えてもらえます。</p>
             <p class="howto-note">⚠️ 1回使うごとに <strong>+5秒</strong> のペナルティがあります</p>
@@ -189,6 +254,17 @@
         </div>
       </div>
 
+      <!-- 実績モーダル -->
+      <div id="ach-modal" class="modal hidden">
+        <div class="modal-content ach-modal-content">
+          <div class="howto-header">
+            <h2>🏅 実績</h2>
+            <button id="btn-ach-close" class="modal-close">×</button>
+          </div>
+          <div id="ach-grid" class="ach-grid"></div>
+        </div>
+      </div>
+
       <div id="result-modal" class="modal hidden">
         <div class="modal-content">
           <div id="result-emoji" class="result-emoji"></div>
@@ -196,7 +272,12 @@
           <p id="result-message"></p>
           <div id="result-best" class="result-best"></div>
           <div id="share-text" class="share-text"></div>
-          <button id="btn-share" class="btn btn-share">📤 結果をシェア</button>
+          <div id="result-achievements" class="result-achievements"></div>
+          <div id="share-buttons" class="share-buttons">
+            <button id="btn-share-x"  class="btn btn-share-x">✕ Xでシェア</button>
+            <button id="btn-share-fb" class="btn btn-share-fb">f Facebookでシェア</button>
+            <button id="btn-share-copy" class="btn btn-share-copy">📋 コピー</button>
+          </div>
           <button id="btn-next" class="btn btn-primary">次のパズルへ</button>
         </div>
       </div>
@@ -204,6 +285,10 @@
   </div>
 
   <script src="js/puzzles.js"></script>
+  <script src="js/wall-puzzles.js"></script>
+  <script src="js/region-puzzles.js"></script>
+  <script src="js/x-puzzles.js"></script>
+  <script src="js/killer-puzzles.js"></script>
   <script src="js/solver.js"></script>
   <script src="js/game.js"></script>
   <script src="js/app.js"></script>

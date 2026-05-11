@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定時退社タンゴ 公開手順ガイド</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #1a1a2e;
+      --surface:  #16213e;
+      --surface2: #0f3460;
+      --text:     #e8e8e8;
+      --sub:      #a0a0b0;
+      --accent:   #4A90D9;
+      --success:  #2ecc71;
+      --warn:     #F5A623;
+      --border:   #2a2a4a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      line-height: 1.7;
+      padding: 32px 16px 64px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--sub);
+      font-size: 0.9rem;
+      margin-bottom: 40px;
+    }
+
+    /* フェーズヘッダー */
+    .phase {
+      margin-bottom: 40px;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--surface2);
+    }
+
+    .phase-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .phase-badge.done   { background: var(--success); }
+    .phase-badge.future { background: var(--sub); }
+
+    .phase-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .phase-eta {
+      font-size: 0.8rem;
+      color: var(--sub);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* ステップカード */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .step-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .step-num {
+      background: var(--surface2);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 0.97rem;
+    }
+
+    .step-body {
+      color: var(--sub);
+      font-size: 0.875rem;
+    }
+
+    .step-body p { margin-top: 4px; }
+    .step-body ul { margin-top: 6px; padding-left: 20px; }
+    .step-body li { margin-bottom: 3px; }
+
+    /* コードブロック */
+    pre {
+      background: #0a0a1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      margin-top: 10px;
+      color: #c5e8ff;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+
+    /* インラインコード */
+    .step-body code {
+      background: var(--surface2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: #c5e8ff;
+    }
+
+    /* ノートボックス */
+    .note {
+      background: #1a2a1a;
+      border-left: 3px solid var(--success);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.83rem;
+      margin-top: 10px;
+      color: var(--sub);
+    }
+
+    .warn-note {
+      background: #2a1f0a;
+      border-left: 3px solid var(--warn);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.83rem;
+      margin-top: 10px;
+      color: var(--sub);
+    }
+
+    .note strong, .warn-note strong { color: var(--text); }
+
+    /* チェックリスト */
+    .checklist {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-top: 40px;
+    }
+
+    .checklist h2 {
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+
+    .checklist label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .checklist label:last-child { border-bottom: none; }
+
+    .checklist input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: var(--success);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .checklist .check-sub {
+      color: var(--sub);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+
+    /* 矢印フロー */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin: 20px 0;
+      font-size: 0.875rem;
+    }
+
+    .flow-item {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 8px 20px;
+      text-align: center;
+    }
+
+    .flow-arrow {
+      color: var(--sub);
+      font-size: 1.1rem;
+    }
+
+    /* リンク */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>🚀 定時退社タンゴ 公開手順ガイド</h1>
+  <p class="subtitle">ドメイン取得 → GitHub Pages 公開 → Cloudflare Pages 移行</p>
+
+  <!-- フロー概要 -->
+  <div class="flow">
+    <div class="flow-item">① Cloudflare でドメイン取得<br><small style="color:var(--sub)">teiji-tango.com / 年1,100円</small></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item">② Git リポジトリ作成 &amp; push</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item">③ GitHub Pages 公開 + カスタムドメイン設定</div>
+    <div class="flow-arrow">↓ （月1万PV超えたら）</div>
+    <div class="flow-item" style="opacity:0.6">④ Cloudflare Pages に移行（DNS切り替えのみ）</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Phase 1: ドメイン取得                   -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge">STEP 1</span>
+      <span class="phase-title">ドメイン取得（Cloudflare Registrar）</span>
+      <span class="phase-eta">所要 15分</span>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">1-1</span>
+          <span class="step-title">Cloudflare アカウントを作成する</span>
+        </div>
+        <div class="step-body">
+          <p><a href="https://dash.cloudflare.com/sign-up" target="_blank">https://dash.cloudflare.com/sign-up</a> にアクセス</p>
+          <ul>
+            <li>メールアドレスとパスワードを入力して登録</li>
+            <li>確認メールのリンクをクリックして認証完了</li>
+          </ul>
+          <div class="note">
+            <strong>なぜ Cloudflare？</strong><br>
+            後でホスティングを GitHub Pages → Cloudflare Pages に移行するとき、
+            DNS の向き先を変えるだけで完結する。お名前.com 等だと余分な操作が増える。
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">1-2</span>
+          <span class="step-title">teiji-tango.com を購入する</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>ダッシュボード左メニュー → <strong>「Domain Registration」</strong> → 「Register domains」</li>
+            <li>検索ボックスに <code>teiji-tango.com</code> と入力して検索</li>
+            <li>取得可能なら「Purchase」→ クレジットカード情報を入力して完了</li>
+          </ul>
+          <div class="note">
+            <strong>料金目安</strong>：.com は年 約1,100円（仲介マージンなしの原価）。
+            自動更新がデフォルトなので設定を確認しておく。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Phase 2: Git & GitHub Pages             -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge">STEP 2</span>
+      <span class="phase-title">Git リポジトリ作成 &amp; GitHub Pages 公開</span>
+      <span class="phase-eta">所要 30分 + DNS反映待ち（最大24時間）</span>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">2-1</span>
+          <span class="step-title">GitHub でリポジトリを作成する</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li><a href="https://github.com/new" target="_blank">https://github.com/new</a> にアクセス</li>
+            <li>Repository name: <code>teiji-tango</code></li>
+            <li>Visibility: <strong>Public</strong>（GitHub Pages 無料プランは Public 必須）</li>
+            <li>「Create repository」をクリック</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">2-2</span>
+          <span class="step-title">ローカルのコードを push する</span>
+        </div>
+        <div class="step-body">
+          <p>teiji-tango フォルダでターミナルを開き、以下を実行：</p>
+          <pre><code>git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/あなたのユーザー名/teiji-tango.git
+git push -u origin main</code></pre>
+          <div class="warn-note">
+            <strong>注意</strong>：<code>node_modules/</code> はアップロード不要。
+            push 前に <code>.gitignore</code> に <code>node_modules</code> が含まれているか確認。
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">2-3</span>
+          <span class="step-title">GitHub Pages を有効にする</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>リポジトリページ → 上部メニュー「Settings」</li>
+            <li>左サイドバー → 「Pages」</li>
+            <li>Source: <strong>「Deploy from a branch」</strong></li>
+            <li>Branch: <strong>main</strong> / <strong>/ (root)</strong> → 「Save」</li>
+          </ul>
+          <p style="margin-top:8px">数分後に <code>https://ユーザー名.github.io/teiji-tango/</code> でアクセス可能になる。</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">2-4</span>
+          <span class="step-title">Cloudflare で DNS レコードを追加する</span>
+        </div>
+        <div class="step-body">
+          <p>Cloudflare ダッシュボード → 取得したドメイン → 「DNS」→「Records」→「Add record」</p>
+          <p style="margin-top:8px">以下の5件を追加：</p>
+          <pre><code>Type: A      Name: @    Value: 185.199.108.153   Proxy: DNS only
+Type: A      Name: @    Value: 185.199.109.153   Proxy: DNS only
+Type: A      Name: @    Value: 185.199.110.153   Proxy: DNS only
+Type: A      Name: @    Value: 185.199.111.153   Proxy: DNS only
+Type: CNAME  Name: www  Value: ユーザー名.github.io  Proxy: DNS only</code></pre>
+          <div class="warn-note">
+            <strong>「Proxy: DNS only」（雲アイコンをグレーに）</strong> にすること。
+            オレンジ（Proxied）のままだと GitHub Pages の HTTPS 証明書が取得できない。
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">2-5</span>
+          <span class="step-title">GitHub Pages にカスタムドメインを設定する</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>GitHub リポジトリ → Settings → Pages</li>
+            <li>「Custom domain」欄に <code>teiji-tango.com</code> を入力 → 「Save」</li>
+            <li>DNS チェックが完了したら（緑チェック表示）「Enforce HTTPS」にチェックを入れる</li>
+          </ul>
+          <div class="note">
+            DNS 反映には最大 24 時間かかる。翌日に確認するのが確実。<br>
+            完了後 <strong>https://teiji-tango.com</strong> でアクセスできる。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Phase 3: 以後の更新方法                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge">STEP 3</span>
+      <span class="phase-title">公開後の更新方法</span>
+      <span class="phase-eta">毎回 1分</span>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">3-1</span>
+          <span class="step-title">コードを変更したら push するだけ</span>
+        </div>
+        <div class="step-body">
+          <pre><code>git add .
+git commit -m "変更内容のメモ"
+git push</code></pre>
+          <p>push 後 1〜2分で <code>teiji-tango.com</code> に反映される。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Phase 4: Cloudflare Pages 移行（将来）  -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge future">STEP 4（将来）</span>
+      <span class="phase-title">Cloudflare Pages への移行</span>
+      <span class="phase-eta">月1万PV超えたら検討 / 所要30分</span>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">4-1</span>
+          <span class="step-title">Cloudflare Pages にプロジェクトを作成する</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>Cloudflare ダッシュボード → 左メニュー「Workers &amp; Pages」</li>
+            <li>「Pages」タブ → 「Create application」→「Connect to Git」</li>
+            <li>GitHub と連携 → <code>teiji-tango</code> リポジトリを選択</li>
+            <li>Build command: <strong>空白</strong>（静的サイトなのでビルド不要）</li>
+            <li>Build output directory: <strong>/</strong>（ルート）</li>
+            <li>「Save and Deploy」をクリック</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">4-2</span>
+          <span class="step-title">カスタムドメインを Cloudflare Pages に向ける</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>プロジェクトの「Custom domain」→「Set up custom domain」</li>
+            <li><code>teiji-tango.com</code> を入力 → 「Activate domain」</li>
+            <li>DNS レコードは Cloudflare が自動で書き換えてくれる（手動操作不要）</li>
+          </ul>
+          <div class="note">
+            <strong>URL は変わりません。</strong> SEO・ブックマーク・シェアされたリンクすべてそのまま。
+            ダウンタイムもほぼゼロ。
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">4-3</span>
+          <span class="step-title">GitHub Pages のカスタムドメイン設定を削除する（後片付け）</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>GitHub リポジトリ → Settings → Pages → Custom domain を空欄に → Save</li>
+            <li>これで Cloudflare Pages 一本化が完了</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- チェックリスト -->
+  <div class="checklist">
+    <h2>✅ 公開チェックリスト</h2>
+
+    <label><input type="checkbox"><div>
+      <div>Cloudflare アカウント作成</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>teiji-tango.com ドメイン取得</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>GitHub リポジトリ作成 &amp; push</div>
+      <div class="check-sub">node_modules が .gitignore に含まれているか確認</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>GitHub Pages 有効化（main ブランチ）</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>Cloudflare DNS に A レコード×4 + CNAME 追加</div>
+      <div class="check-sub">Proxy ステータスを「DNS only（グレー雲）」に設定</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>GitHub Pages にカスタムドメイン設定 &amp; Enforce HTTPS ON</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>https://teiji-tango.com でアクセス確認</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>OGP 画像作成（1200×630px PNG）を icons/ogp.png に配置</div>
+      <div class="check-sub">SNS シェア時のカード画像。ないとテキストだけになる</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>Google Search Console にサイトを登録</div>
+      <div class="check-sub">検索流入のモニタリングに必要</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>X（旧Twitter）で公開ツイート投稿</div>
+      <div class="check-sub">#パズル #ゲーム #定時退社タンゴ などのタグ推奨</div>
+    </div></label>
+  </div>
+
+</div>
+</body>
+</html>

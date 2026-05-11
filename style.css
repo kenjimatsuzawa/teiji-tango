@@ -48,6 +48,13 @@ header {
 
 .header-inner .streak { justify-self: end; }
 
+.header-right {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* ===== 遊び方ボタン ===== */
 .btn-howto {
   justify-self: start;
@@ -374,11 +381,31 @@ h1 {
 
 .btn-undo:active:not(:disabled) { transform: scale(0.96); }
 
-.btn-share {
-  background: linear-gradient(135deg, #1da1f2, #0d8ecf);
-  color: #fff;
+.share-buttons {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
   width: 100%;
   margin-bottom: 8px;
+}
+
+.btn-share-x {
+  background: #000;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.btn-share-fb {
+  background: #1877f2;
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-share-copy {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1.5px solid var(--border);
 }
 
 /* ===== ヒントパネル ===== */
@@ -683,3 +710,353 @@ h1 {
 }
 
 .demo-con-desc strong { color: var(--text); }
+
+/* ===== 実績ボタン (ヘッダー) ===== */
+.btn-ach {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+}
+
+/* ===== 実績モーダル ===== */
+.ach-modal-content {
+  max-height: 80dvh;
+  overflow-y: auto;
+}
+
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.ach-item {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.ach-item.locked {
+  opacity: 0.45;
+}
+
+.ach-icon {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.ach-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.ach-desc {
+  font-size: 0.7rem;
+  color: var(--text-sub);
+}
+
+/* ===== 結果モーダル: 新実績 ===== */
+.result-achievements {
+  margin: 12px 0 4px;
+}
+
+.result-ach-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 6px;
+}
+
+.result-ach-item {
+  font-size: 0.9rem;
+  padding: 4px 0;
+}
+
+/* ===== モードタブ ===== */
+#mode-tabs {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.mode-tab {
+  flex: 1;
+  padding: 8px 0;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-sub);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.mode-tab.mode-active {
+  background: var(--surface2);
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+/* ===== 壁マーカー ===== */
+.wall-marker {
+  position: absolute;
+  background: var(--text);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.wall-v {
+  width: 4px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.wall-h {
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 2px;
+}
+
+/* ===== 仮置きモード ===== */
+.btn-tentative {
+  background: transparent;
+  border: 2px solid var(--text-sub);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.btn-tentative.tentative-on,
+.btn-tentative:hover {
+  border-color: var(--warn);
+  color: var(--warn);
+  background: #1a1200;
+}
+
+.tentative-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e1500;
+  border: 1px solid var(--warn);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.tentative-label {
+  font-size: 0.82rem;
+  color: var(--warn);
+  font-weight: 700;
+  flex: 1;
+}
+
+.btn-tentative-confirm {
+  background: #0f2a0f;
+  border: 1px solid var(--success);
+  color: var(--success);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-tentative-confirm:hover { background: #1a3a1a; }
+
+.btn-tentative-discard {
+  background: #2a0f0f;
+  border: 1px solid var(--error);
+  color: var(--error);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-tentative-discard:hover { background: #3a1a1a; }
+
+.cell.tentative {
+  border-style: dashed;
+  border-color: var(--warn) !important;
+  opacity: 0.82;
+}
+
+/* ===== テーマ切り替え ===== */
+.theme-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+
+.theme-btn {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 5px 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.4;
+}
+
+.theme-btn:hover {
+  border-color: var(--text-sub);
+}
+
+.theme-btn.theme-active {
+  border-color: var(--accent);
+  background: var(--surface2);
+}
+
+/* ===== エリア境界線 ===== */
+.region-border {
+  position: absolute;
+  pointer-events: none;
+  z-index: 8;
+  border-radius: 2px;
+}
+
+.region-border-h {
+  height: 3px;
+  background: var(--text);
+  transform: translateY(-50%);
+}
+
+.region-border-v {
+  width: 3px;
+  background: var(--text);
+  transform: translateX(-50%);
+}
+
+/* ===== 遊び方: エリア図 ===== */
+.demo-region-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  margin: 8px auto;
+  width: fit-content;
+}
+
+.demo-region {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.demo-region.r0c0 { background: rgba(74,144,217,0.2); color: #4A90D9; }
+.demo-region.r0c1 { background: rgba(245,166,35,0.2);  color: #F5A623; }
+.demo-region.r1c0 { background: rgba(46,204,113,0.2);  color: #2ecc71; }
+.demo-region.r1c1 { background: rgba(155,89,182,0.2);  color: #9b59b6; }
+.demo-region.r2c0 { background: rgba(231,76,60,0.2);   color: #e74c3c; }
+.demo-region.r2c1 { background: rgba(26,188,156,0.2);  color: #1abc9c; }
+
+/* ===== Xタンゴ: 対角線ハイライト ===== */
+.cell.diag-cell {
+  box-shadow: inset 0 0 0 2px rgba(180, 100, 255, 0.5);
+}
+
+.cell.diag-cell.error {
+  box-shadow: none;
+}
+
+/* ===== 遊び方: Xタンゴ図 ===== */
+.demo-x-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2px;
+  margin: 8px auto;
+  width: fit-content;
+}
+
+.demo-x-cell {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text-sub);
+}
+
+/* ===== キラータンゴ ===== */
+.cage-svg-overlay {
+  position: absolute;
+  left: 0; top: 0;
+  pointer-events: none;
+  z-index: 15;
+  overflow: visible;
+}
+
+.cage-label {
+  position: absolute;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #c084fc;
+  z-index: 20;
+  pointer-events: none;
+  line-height: 1;
+  background: rgba(15, 20, 46, 0.85);
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+/* ===== 遊び方: キラーデモ ===== */
+.demo-killer-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 10px 12px;
+  border: 2px dashed #c084fc;
+  border-radius: 10px;
+  width: fit-content;
+  position: relative;
+}
+
+.demo-killer-label {
+  position: absolute;
+  top: -8px; left: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #c084fc;
+  background: var(--surface);
+  padding: 0 4px;
+}
+
+.demo-killer-cells {
+  display: flex;
+  gap: 4px;
+}
+
+.demo-x-cell.diag-demo {
+  box-shadow: inset 0 0 0 2px rgba(180, 100, 255, 0.6);
+  color: rgba(180, 100, 255, 0.9);
+  background: rgba(180, 100, 255, 0.08);
+}

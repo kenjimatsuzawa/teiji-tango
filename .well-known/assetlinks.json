@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.teijitango.app",
+      "sha256_cert_fingerprints": [
+        "TODO: bubblewrap build 後に生成される SHA-256 フィンガープリントに置き換える"
+      ]
+    }
+  }
+]

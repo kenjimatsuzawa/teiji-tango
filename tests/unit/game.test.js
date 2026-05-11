@@ -319,6 +319,70 @@ describe('isComplete', () => {
   });
 });
 
+// ─── checkRegionBalance ──────────────────────────────────────
+
+describe('checkRegionBalance', () => {
+  // エリアパズル用のダミー（hasRegions=true）
+  function makeRegionPuzzle() {
+    // 行・列バランス＋エリアバランスを満たす既知の解を手動で作る
+    // 2×3ブロック6つに3:3で分かれる解
+    const solution = [
+      [1,2,1,2,1,2],
+      [2,1,2,1,2,1],
+      [1,2,2,1,1,2],
+      [2,1,1,2,2,1],
+      [2,1,2,1,1,2],
+      [1,2,1,2,2,1],
+    ];
+    return {
+      size: 6, hasRegions: true,
+      initial: solution.map(r => r.map(() => EMPTY)),
+      solution, constraints: [], walls: [],
+    };
+  }
+
+  test('hasRegions=false のパズルでは常に true', () => {
+    const game = makeGame();
+    fillWithSolution(game);
+    expect(game.checkRegionBalance()).toBe(true);
+  });
+
+  test('エリアバランスが取れた盤面で true', () => {
+    const puzzle = makeRegionPuzzle();
+    const TangoGame2 = loadGame(TangoSolver);
+    const game = new TangoGame2(puzzle);
+    game.grid = puzzle.solution.map(r => [...r]);
+    expect(game.checkRegionBalance()).toBe(true);
+  });
+
+  test('エリアバランス違反で false', () => {
+    const puzzle = makeRegionPuzzle();
+    const TangoGame2 = loadGame(TangoSolver);
+    const game = new TangoGame2(puzzle);
+    game.grid = puzzle.solution.map(r => [...r]);
+    // エリア0 (rows 0-1, cols 0-2) に SHIRT を4個詰め込む
+    game.grid[0][0] = SHIRT; game.grid[0][1] = SHIRT; game.grid[0][2] = SHIRT;
+    game.grid[1][0] = SHIRT; game.grid[1][1] = BEER;  game.grid[1][2] = BEER;
+    expect(game.checkRegionBalance()).toBe(false);
+  });
+
+  test('エリアバランス違反でエラーセルが検出される', () => {
+    const puzzle = makeRegionPuzzle();
+    const TangoGame2 = loadGame(TangoSolver);
+    const game = new TangoGame2(puzzle);
+    game.grid = puzzle.solution.map(r => [...r]);
+    // エリア0 に SHIRT 4個
+    game.grid[0][0] = SHIRT; game.grid[0][1] = SHIRT; game.grid[0][2] = SHIRT;
+    game.grid[1][0] = SHIRT; game.grid[1][1] = BEER;  game.grid[1][2] = BEER;
+    const errors = game.getErrors();
+    // 4個のSHIRTがエラーになる
+    expect(errors.has('0,0')).toBe(true);
+    expect(errors.has('0,1')).toBe(true);
+    expect(errors.has('0,2')).toBe(true);
+    expect(errors.has('1,0')).toBe(true);
+  });
+});
+
 // ─── getNextHint ─────────────────────────────────────────────
 
 describe('getNextHint', () => {

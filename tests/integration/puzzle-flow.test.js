@@ -297,6 +297,141 @@ describe('ベストタイム ロジック', () => {
   });
 });
 
+// ─── 実績ロジック ────────────────────────────────────────────
+
+describe('実績ロジック', () => {
+  let store;
+  beforeEach(() => {
+    store = {};
+    global.localStorage = {
+      getItem:    k      => store[k] ?? null,
+      setItem:    (k, v) => { store[k] = String(v); },
+      removeItem: k      => { delete store[k]; },
+    };
+  });
+
+  // app.js の実績ロジックと同等
+  const ACHIEVEMENTS = [
+    { id: 'first_clear', icon: '🎯', name: 'はじめての定時退社', desc: '初めてクリア' },
+    { id: 'no_hint',     icon: '🎖️', name: 'ノーヒント退社',    desc: 'ヒントなしでクリア' },
+    { id: 'speed_easy',  icon: '⚡', name: 'スピード退社',       desc: '初級を2分以内でクリア' },
+    { id: 'clear_mid',   icon: '🧠', name: '中堅社員',           desc: '中級をクリア' },
+    { id: 'clear_hard',  icon: '👑', name: 'エース社員',         desc: '上級をクリア' },
+    { id: 'streak_3',    icon: '🔥', name: '3日連続',            desc: '3日連続でプレイ' },
+    { id: 'streak_7',    icon: '💫', name: '7日連続',            desc: '7日連続でプレイ' },
+    { id: 'all_diff',    icon: '⭐', name: '三冠達成',           desc: '1日で3難易度全てクリア' },
+  ];
+
+  function getEarnedIds() {
+    try { return new Set(JSON.parse(localStorage.getItem('achievements') || '[]')); }
+    catch { return new Set(); }
+  }
+
+  function earnAchievement(id) {
+    const earned = getEarnedIds();
+    if (earned.has(id)) return false;
+    earned.add(id);
+    localStorage.setItem('achievements', JSON.stringify([...earned]));
+    return true;
+  }
+
+  function markCompletedToday(diff) {
+    localStorage.setItem(`done_${diff}_${new Date().toDateString()}`, '1');
+  }
+  function isCompletedToday(diff) {
+    return localStorage.getItem(`done_${diff}_${new Date().toDateString()}`) === '1';
+  }
+
+  const DIFFICULTIES = ['初級', '中級', '上級'];
+  function checkAndEarnAchievements(difficulty, secs, hints) {
+    const streak = parseInt(localStorage.getItem('streak') || '0');
+    const candidates = [
+      { id: 'first_clear', cond: true },
+      { id: 'no_hint',     cond: hints === 0 },
+      { id: 'speed_easy',  cond: difficulty === '初級' && secs <= 120 },
+      { id: 'clear_mid',   cond: difficulty === '中級' },
+      { id: 'clear_hard',  cond: difficulty === '上級' },
+      { id: 'streak_3',    cond: streak >= 3 },
+      { id: 'streak_7',    cond: streak >= 7 },
+      { id: 'all_diff',    cond: DIFFICULTIES.every(d => isCompletedToday(d)) },
+    ];
+    return candidates
+      .filter(({ cond }) => cond)
+      .map(({ id }) => earnAchievement(id) ? ACHIEVEMENTS.find(a => a.id === id) : null)
+      .filter(Boolean);
+  }
+
+  test('初クリアで first_clear が解除される', () => {
+    const result = checkAndEarnAchievements('初級', 200, 0);
+    expect(result.map(a => a.id)).toContain('first_clear');
+  });
+
+  test('同じ実績は2回解除されない', () => {
+    checkAndEarnAchievements('初級', 200, 0);
+    const result2 = checkAndEarnAchievements('初級', 200, 0);
+    expect(result2.map(a => a.id)).not.toContain('first_clear');
+  });
+
+  test('ヒント0回で no_hint が解除される', () => {
+    const result = checkAndEarnAchievements('初級', 200, 0);
+    expect(result.map(a => a.id)).toContain('no_hint');
+  });
+
+  test('ヒントありでは no_hint が解除されない', () => {
+    const result = checkAndEarnAchievements('初級', 200, 1);
+    expect(result.map(a => a.id)).not.toContain('no_hint');
+  });
+
+  test('初級120秒以内で speed_easy が解除される', () => {
+    const result = checkAndEarnAchievements('初級', 120, 0);
+    expect(result.map(a => a.id)).toContain('speed_easy');
+  });
+
+  test('初級121秒では speed_easy が解除されない', () => {
+    const result = checkAndEarnAchievements('初級', 121, 0);
+    expect(result.map(a => a.id)).not.toContain('speed_easy');
+  });
+
+  test('中級クリアで clear_mid が解除される', () => {
+    const result = checkAndEarnAchievements('中級', 200, 0);
+    expect(result.map(a => a.id)).toContain('clear_mid');
+  });
+
+  test('上級クリアで clear_hard が解除される', () => {
+    const result = checkAndEarnAchievements('上級', 200, 0);
+    expect(result.map(a => a.id)).toContain('clear_hard');
+  });
+
+  test('streak=3 で streak_3 が解除される', () => {
+    localStorage.setItem('streak', '3');
+    const result = checkAndEarnAchievements('初級', 200, 0);
+    expect(result.map(a => a.id)).toContain('streak_3');
+  });
+
+  test('streak=7 で streak_7 も解除される', () => {
+    localStorage.setItem('streak', '7');
+    const result = checkAndEarnAchievements('初級', 200, 0);
+    const ids = result.map(a => a.id);
+    expect(ids).toContain('streak_3');
+    expect(ids).toContain('streak_7');
+  });
+
+  test('3難易度完了で all_diff が解除される', () => {
+    markCompletedToday('初級');
+    markCompletedToday('中級');
+    markCompletedToday('上級');
+    const result = checkAndEarnAchievements('上級', 200, 0);
+    expect(result.map(a => a.id)).toContain('all_diff');
+  });
+
+  test('2難易度のみでは all_diff が解除されない', () => {
+    markCompletedToday('初級');
+    markCompletedToday('中級');
+    const result = checkAndEarnAchievements('中級', 200, 0);
+    expect(result.map(a => a.id)).not.toContain('all_diff');
+  });
+});
+
 // ─── ヘルパー ────────────────────────────────────────────────
 
 function findEmpty(game) {
