@@ -62,6 +62,9 @@ const THEMES = [
 ];
 
 function loadCurrentTheme() {
+  // テーマ切替がフラグでオフの間は、過去に選択保存されたテーマ（例: 検証中の寿司・狐）が
+  // 残っていても無視し、常にデフォルト（👔🍺）に固定する
+  if (!FEATURE_FLAGS.themeSwitcher) return THEMES[0];
   const saved = localStorage.getItem('theme');
   return THEMES.find(t => t.id === saved) || THEMES[0];
 }
