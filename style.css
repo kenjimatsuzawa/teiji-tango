@@ -314,6 +314,14 @@ h1 {
   opacity: 0.8;
 }
 
+/* ===== 結果モーダル: モード・難易度ラベル ===== */
+.result-mode-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin: -4px 0 8px;
+}
+
 /* ===== 結果モーダル: ベストタイム ===== */
 .result-best {
   font-size: 0.9rem;
@@ -809,6 +817,10 @@ h1 {
   background: var(--surface2);
   border-color: var(--warn);
   color: var(--warn);
+}
+
+.mode-tab.mode-locked {
+  display: none;
 }
 
 /* ===== 壁マーカー ===== */

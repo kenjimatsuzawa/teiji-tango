@@ -182,11 +182,11 @@ describe('解グリッドのルール検証', () => {
 // ─── 難易度別 初期マス数 ─────────────────────────────────────
 
 describe('難易度別 初期マス数', () => {
-  test('初級: 初期マスが 18 個以上', () => {
+  test('初級: 初期マスが 14 個以上', () => {
     const easy = PUZZLES.filter(p => p.difficulty === '初級');
     for (const p of easy) {
       const count = p.initial.flat().filter(v => v !== EMPTY).length;
-      expect(count).toBeGreaterThanOrEqual(18);
+      expect(count).toBeGreaterThanOrEqual(14);
     }
   });
 

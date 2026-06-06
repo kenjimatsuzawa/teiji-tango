@@ -18,32 +18,37 @@ function shuffle(arr) {
 function copyGrid(g) { return g.map(r => [...r]); }
 function isFilled(g) { return g.every(r => r.every(v => v !== EMPTY)); }
 
-// ─── グリッド生成 ─────────────────────────────────────────────
+// ─── グリッド生成（壁対応：壁をまたぐ3連続を許可）──────────────
+// 壁モードでは「壁をまたぐ同じ記号の連続」はルール違反にならない。
+// 標準ルールで解を作ると壁が無くても同じ解が一意に求まり「飾り」になるため、
+// 解生成自体に壁の位置を反映させ、壁をまたぐ3連続が起こり得るようにする。
 
-function canPlace(grid, r, c, val) {
+function canPlace(grid, r, c, val, hw, vw) {
   if (grid[r].filter(v => v === val).length >= 3) return false;
   if (grid.map(row => row[c]).filter(v => v === val).length >= 3) return false;
-  if (c >= 2 && grid[r][c-1] === val && grid[r][c-2] === val) return false;
-  if (r >= 2 && grid[r-1][c] === val && grid[r-2][c] === val) return false;
+  // 行3連続（同一セグメント内のみ）
+  if (c >= 2 && !hw(r, c-2) && !hw(r, c-1) && grid[r][c-1] === val && grid[r][c-2] === val) return false;
+  // 列3連続（同一セグメント内のみ）
+  if (r >= 2 && !vw(r-2, c) && !vw(r-1, c) && grid[r-1][c] === val && grid[r-2][c] === val) return false;
   return true;
 }
 
-function fillGrid(grid, pos) {
+function fillGrid(grid, pos, hw, vw) {
   if (pos === SIZE * SIZE) return true;
   const r = Math.floor(pos / SIZE), c = pos % SIZE;
   for (const val of shuffle([SHIRT, BEER])) {
-    if (canPlace(grid, r, c, val)) {
+    if (canPlace(grid, r, c, val, hw, vw)) {
       grid[r][c] = val;
-      if (fillGrid(grid, pos + 1)) return true;
+      if (fillGrid(grid, pos + 1, hw, vw)) return true;
       grid[r][c] = EMPTY;
     }
   }
   return false;
 }
 
-function generateGrid() {
+function generateGrid(hw, vw) {
   const grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(EMPTY));
-  return fillGrid(grid, 0) ? grid : null;
+  return fillGrid(grid, 0, hw, vw) ? grid : null;
 }
 
 // ─── 壁生成 ───────────────────────────────────────────────────
@@ -157,6 +162,35 @@ function solve(initial, walls) {
   return isFilled(grid);
 }
 
+// 解の中に「壁をまたぐ3連続」が実在するか（壁が解の構造に効いているか）
+function wallsShapeSolution(solution, walls) {
+  const hw = makeHW(walls), vw = makeVW(walls);
+  for (let r = 0; r < SIZE; r++)
+    for (let c = 0; c + 2 < SIZE; c++)
+      if ((hw(r, c) || hw(r, c+1)) &&
+          solution[r][c] === solution[r][c+1] && solution[r][c+1] === solution[r][c+2]) return true;
+  for (let c = 0; c < SIZE; c++)
+    for (let r = 0; r + 2 < SIZE; r++)
+      if ((vw(r, c) || vw(r+1, c)) &&
+          solution[r][c] === solution[r+1][c] && solution[r+1][c] === solution[r+2][c]) return true;
+  return false;
+}
+
+// 壁を無視して解いた場合に「正しい解」へたどり着けるか
+// （たどり着けるなら壁は飾り＝essentialではない）
+function solvesToSameWithoutWalls(initial, solution) {
+  const noWall = () => false;
+  const grid = copyGrid(initial);
+  let changed = true;
+  while (changed && !isFilled(grid)) {
+    changed = false;
+    if (applyBalance(grid))                  changed = true;
+    if (applyDoubleBlock(grid, noWall, noWall)) changed = true;
+    if (applySandwich(grid, noWall, noWall))    changed = true;
+  }
+  return isFilled(grid) && grid.every((row, r) => row.every((v, c) => v === solution[r][c]));
+}
+
 // ─── セル削除（目標givens数まで削る） ────────────────────────
 
 function removeToTarget(solution, walls, minGiven, maxGiven) {
@@ -188,12 +222,18 @@ const DIFF_PARAMS = {
 
 function tryGeneratePuzzle(diff, id) {
   const { wallCount, minGiven, maxGiven } = DIFF_PARAMS[diff];
-  for (let attempt = 0; attempt < 300; attempt++) {
-    const solution = generateGrid();
-    if (!solution) continue;
+  for (let attempt = 0; attempt < 500; attempt++) {
+    // 壁を先に決め、壁をまたぐ3連続を許した解を生成する
     const walls = generateWalls(wallCount);
+    const hw = makeHW(walls), vw = makeVW(walls);
+    const solution = generateGrid(hw, vw);
+    if (!solution) continue;
+    // 解の中で実際に「壁をまたぐ3連続」が使われていなければ壁は無意味
+    if (!wallsShapeSolution(solution, walls)) continue;
     const initial = removeToTarget(solution, walls, minGiven, maxGiven);
     if (!initial) continue;
+    // 壁を無視した解法で正解にたどり着けてしまうなら壁は飾り
+    if (solvesToSameWithoutWalls(initial, solution)) continue;
     return { id, difficulty: diff, size: SIZE, walls, initial, solution, constraints: [] };
   }
   return null;
@@ -209,7 +249,7 @@ let id = 1001;
 for (const diff of DIFFS) {
   let generated = 0;
   let totalAttempts = 0;
-  while (generated < COUNT && totalAttempts < COUNT * 20) {
+  while (generated < COUNT && totalAttempts < COUNT * 60) {
     totalAttempts++;
     const p = tryGeneratePuzzle(diff, id);
     if (p) {

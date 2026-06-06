@@ -183,6 +183,19 @@ function solve(initial) {
   return isFilled(grid);
 }
 
+// 対角線テクニックなしで解けるか（対角線が飾りかどうかの判定用）
+function solveWithoutDiag(initial) {
+  const grid = copyGrid(initial);
+  let changed = true;
+  while (changed && !isFilled(grid)) {
+    changed = false;
+    if (applyBalance(grid))     changed = true;
+    if (applyDoubleBlock(grid)) changed = true;
+    if (applySandwich(grid))    changed = true;
+  }
+  return isFilled(grid);
+}
+
 // ─── セル削除 ────────────────────────────────────────────────
 
 function removeToTarget(solution, minGiven, maxGiven) {
@@ -211,11 +224,13 @@ const DIFF_PARAMS = {
 
 function tryGeneratePuzzle(diff, id) {
   const { minGiven, maxGiven } = DIFF_PARAMS[diff];
-  for (let attempt = 0; attempt < 800; attempt++) {
+  for (let attempt = 0; attempt < 1500; attempt++) {
     const solution = generateGrid();
     if (!solution) continue;
     const initial = removeToTarget(solution, minGiven, maxGiven);
     if (!initial) continue;
+    // 対角線テクニックなしでは解けないことを確認（対角線が飾りになっていないかチェック）
+    if (solveWithoutDiag(initial)) continue;
     return { id, difficulty: diff, size: SIZE, hasX: true, initial, solution, constraints: [], walls: [] };
   }
   return null;
@@ -230,7 +245,7 @@ let id = 3001;
 
 for (const diff of DIFFS) {
   let generated = 0, totalAttempts = 0;
-  while (generated < COUNT && totalAttempts < COUNT * 20) {
+  while (generated < COUNT && totalAttempts < COUNT * 100) {
     totalAttempts++;
     const p = tryGeneratePuzzle(diff, id);
     if (p) {

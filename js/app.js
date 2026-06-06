@@ -6,6 +6,33 @@ let puzzleDay;
 let currentDifficulty = '初級';
 let currentMode = 'normal'; // 'normal' | 'wall' | 'region' | 'x' | 'killer'
 
+const MODE_LABELS = {
+  normal: '通常',
+  wall:   '🧱 壁あり',
+  region: '🗂️ エリア',
+  x:      'Xタンゴ',
+  killer: '🔪 キラータンゴ',
+};
+function getModeLabel(mode) {
+  return MODE_LABELS[mode] || mode;
+}
+
+// ─── フィーチャーフラグ：モードの段階公開 ──────────────
+// LAUNCH_DATE を起点に、MODE_UNLOCK_DAYS に載っているモードだけ何日後に解禁するかを管理する。
+// 載っていないモード（通常・壁あり = 初期リリース分）は常時解禁。
+// 公開日が決まったら LAUNCH_DATE だけ更新すれば段階公開モードの解禁日が連動してずれる。
+const LAUNCH_DATE = '2026-06-20';
+const MODE_UNLOCK_DAYS = {
+  region: 14, // 公開2週間後
+  x:      28, // 公開4週間後
+  killer: 42, // 公開6週間後
+};
+function isModeUnlocked(mode) {
+  if (!(mode in MODE_UNLOCK_DAYS)) return true;
+  const unlockTime = new Date(LAUNCH_DATE).getTime() + MODE_UNLOCK_DAYS[mode] * 24 * 60 * 60 * 1000;
+  return Date.now() >= unlockTime;
+}
+
 // タイマー
 let timerSecs = 0;
 let timerInterval = null;
@@ -86,7 +113,7 @@ function checkAndEarnAchievements(difficulty, secs, hints) {
     { id: 'clear_hard',  cond: difficulty === '上級' },
     { id: 'streak_3',    cond: streak >= 3 },
     { id: 'streak_7',    cond: streak >= 7 },
-    { id: 'all_diff',    cond: DIFFICULTIES.every(d => isCompletedToday(d)) },
+    { id: 'all_diff',    cond: DIFFICULTIES.every(d => isCompletedToday(currentMode, d)) },
   ];
   return candidates
     .filter(({ cond }) => cond)
@@ -113,48 +140,51 @@ function renderResultAchievements(achs) {
 }
 
 // ─── ベストタイム ────────────────────────────
-function getBestTime(diff) {
-  const v = localStorage.getItem(`bestTime_${diff}`);
+function getBestTime(mode, diff) {
+  const v = localStorage.getItem(`bestTime_${mode}_${diff}`);
   return v !== null ? parseInt(v, 10) : null;
 }
 
 // 更新できたとき true を返す
-function tryUpdateBestTime(diff, secs) {
-  const current = getBestTime(diff);
+function tryUpdateBestTime(mode, diff, secs) {
+  const current = getBestTime(mode, diff);
   if (current === null || secs < current) {
-    localStorage.setItem(`bestTime_${diff}`, secs);
+    localStorage.setItem(`bestTime_${mode}_${diff}`, secs);
     return true;
   }
   return false;
 }
 
-function renderBestTime(diff) {
-  const best = getBestTime(diff);
+function renderBestTime(mode, diff) {
+  const best = getBestTime(mode, diff);
   const el = document.getElementById('best-time');
   el.textContent = best !== null ? `ベスト ${formatTime(best)}` : '';
 }
 
 // ─── 完了トラッキング ─────────────────────────
-function getTodayKey(diff) {
-  return `done_${diff}_${new Date().toDateString()}`;
+function getTodayKey(mode, diff) {
+  return `done_${mode}_${diff}_${new Date().toDateString()}`;
 }
 
-function markCompleted(diff) {
-  localStorage.setItem(getTodayKey(diff), '1');
+function markCompleted(mode, diff) {
+  localStorage.setItem(getTodayKey(mode, diff), '1');
 }
 
-function isCompletedToday(diff) {
-  return localStorage.getItem(getTodayKey(diff)) === '1';
+function isCompletedToday(mode, diff) {
+  return localStorage.getItem(getTodayKey(mode, diff)) === '1';
 }
 
 // ─── 難易度タブ ───────────────────────────────
 function renderModeTabs() {
   document.querySelectorAll('.mode-tab').forEach(btn => {
-    btn.classList.toggle('mode-active', btn.dataset.mode === currentMode);
+    const mode = btn.dataset.mode;
+    btn.classList.toggle('mode-locked', !isModeUnlocked(mode));
+    btn.classList.toggle('mode-active', mode === currentMode);
   });
 }
 
 function loadMode(mode) {
+  if (!isModeUnlocked(mode)) return;
   currentMode = mode;
   renderModeTabs();
   loadDifficulty(currentDifficulty);
@@ -164,7 +194,7 @@ function renderDifficultyTabs() {
   document.querySelectorAll('.diff-tab').forEach(btn => {
     const diff = btn.dataset.diff;
     btn.classList.toggle('diff-active', diff === currentDifficulty);
-    btn.classList.toggle('diff-done', isCompletedToday(diff));
+    btn.classList.toggle('diff-done', isCompletedToday(currentMode, diff));
   });
 }
 
@@ -192,12 +222,12 @@ function loadDifficulty(difficulty) {
     : `手がかり${initialCount}個`;
 
   renderDifficultyTabs();
-  renderBestTime(difficulty);
+  renderBestTime(currentMode, difficulty);
   hideHintPanel();
   updateUndoButton();
   renderGrid();
 
-  if (!isCompletedToday(difficulty)) {
+  if (!isCompletedToday(currentMode, difficulty)) {
     startTimer();
   } else {
     document.getElementById('timer').textContent = '−:−−';
@@ -207,13 +237,12 @@ function loadDifficulty(difficulty) {
 function init() {
   puzzleDay = getDayNumber();
   loadStreak();
+  renderModeTabs();
   loadDifficulty('初級');
 }
 
 function getDayNumber() {
-  const start = new Date('2025-01-01');
-  const today = new Date();
-  return Math.floor((today - start) / (1000 * 60 * 60 * 24)) + 1;
+  return getDayIndex() + 1; // 共通ロジック（puzzles.js で定義、JST16:00リセット）
 }
 
 // ─── タイマー ───────────────────────────────────
@@ -266,7 +295,7 @@ function confirmTentative() {
     setTimeout(() => {
       if (game.isComplete()) {
         stopTimer();
-        markCompleted(currentDifficulty);
+        markCompleted(currentMode, currentDifficulty);
         renderDifficultyTabs();
         showResult(true);
       }
@@ -291,7 +320,7 @@ function renderGrid() {
   gridEl.innerHTML = '';
   gridEl.style.gridTemplateColumns = `repeat(${game.size}, 1fr)`;
 
-  const errors = tentativeMode ? new Set() : game.getErrors();
+  const errors = new Set(); // リアルタイムのミス表示は行わない（ゲームが簡単になりすぎるため）
 
   for (let r = 0; r < game.size; r++) {
     for (let c = 0; c < game.size; c++) {
@@ -556,7 +585,7 @@ function onCellClick(r, c) {
     setTimeout(() => {
       if (game.isComplete()) {
         stopTimer();
-        markCompleted(currentDifficulty);
+        markCompleted(currentMode, currentDifficulty);
         renderDifficultyTabs();
         showResult(true);
       }
@@ -597,8 +626,11 @@ function showResult(won) {
   const modal = document.getElementById('result-modal');
   const emoji = document.getElementById('result-emoji');
   const title = document.getElementById('result-title');
+  const modeLabelEl = document.getElementById('result-mode-label');
   const msg   = document.getElementById('result-message');
   const shareText = document.getElementById('share-text');
+
+  modeLabelEl.textContent = `${getModeLabel(currentMode)}・${currentDifficulty}`;
 
   if (won) {
     emoji.textContent = '🎉';
@@ -606,14 +638,14 @@ function showResult(won) {
     const hintNote = hintsUsed > 0 ? `（ヒント${hintsUsed}回使用）` : '';
     msg.textContent = `お疲れ様でした！ ${formatTime(timerSecs)} でクリア${hintNote}`;
 
-    const isNewBest = tryUpdateBestTime(currentDifficulty, timerSecs);
-    renderBestTime(currentDifficulty);
+    const isNewBest = tryUpdateBestTime(currentMode, currentDifficulty, timerSecs);
+    renderBestTime(currentMode, currentDifficulty);
     const bestEl = document.getElementById('result-best');
     if (isNewBest) {
       bestEl.textContent = `🏆 新記録！ ${formatTime(timerSecs)}`;
       bestEl.className = 'result-best new-record';
     } else {
-      const best = getBestTime(currentDifficulty);
+      const best = getBestTime(currentMode, currentDifficulty);
       bestEl.textContent = `ベストタイム ${formatTime(best)}`;
       bestEl.className = 'result-best';
     }
@@ -621,7 +653,7 @@ function showResult(won) {
     saveStreak();
     const newAchs = checkAndEarnAchievements(currentDifficulty, timerSecs, hintsUsed);
     renderResultAchievements(newAchs);
-    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2);
+    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
     shareText.textContent = text;
     document.getElementById('share-buttons').style.display = 'flex';
   } else {
@@ -692,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hideHintPanel();
     updateUndoButton();
     renderGrid();
-    if (!isCompletedToday(currentDifficulty)) startTimer();
+    if (!isCompletedToday(currentMode, currentDifficulty)) startTimer();
   });
 
   document.getElementById('btn-undo').addEventListener('click', () => {
@@ -740,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (game.isComplete()) {
       stopTimer();
-      markCompleted(currentDifficulty);
+      markCompleted(currentMode, currentDifficulty);
       renderDifficultyTabs();
       showResult(true);
     } else {
@@ -749,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-share-x').addEventListener('click', () => {
-    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2);
+    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
     window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   });
 
@@ -758,7 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-share-copy').addEventListener('click', () => {
-    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2);
+    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
     const btn = document.getElementById('btn-share-copy');
     if (navigator.share) {
       navigator.share({ text });

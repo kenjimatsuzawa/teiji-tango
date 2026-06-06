@@ -9725,7 +9725,7 @@ const REGION_PUZZLES = [
 ];
 
 function getRegionPuzzleByDifficulty(difficulty) {
-  const day = Math.floor((new Date() - new Date('2025-01-01')) / 86400000);
+  const day = getDayIndex(); // 共通ロジック（puzzles.js で定義、JST16:00リセット）
   const pool = REGION_PUZZLES.filter(p => p.difficulty === difficulty);
   return pool[day % pool.length];
 }

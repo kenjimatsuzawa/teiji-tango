@@ -250,7 +250,7 @@
 <div class="container">
 
   <h1>🚀 定時退社タンゴ 公開手順ガイド</h1>
-  <p class="subtitle">ドメイン取得 → GitHub Pages 公開 → Cloudflare Pages 移行</p>
+  <p class="subtitle">ドメイン取得 → GitHub Pages 公開 → アクセス解析設置 → Cloudflare Pages 移行</p>
 
   <!-- フロー概要 -->
   <div class="flow">
@@ -259,8 +259,10 @@
     <div class="flow-item">② Git リポジトリ作成 &amp; push</div>
     <div class="flow-arrow">↓</div>
     <div class="flow-item">③ GitHub Pages 公開 + カスタムドメイン設定</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-item">④ Cloudflare Web Analytics 設置<br><small style="color:var(--sub)">無料・Cookieなし・スニペット1行</small></div>
     <div class="flow-arrow">↓ （月1万PV超えたら）</div>
-    <div class="flow-item" style="opacity:0.6">④ Cloudflare Pages に移行（DNS切り替えのみ）</div>
+    <div class="flow-item" style="opacity:0.6">⑤ Cloudflare Pages に移行（DNS切り替えのみ）</div>
   </div>
 
 
@@ -423,11 +425,67 @@ Type: CNAME  Name: www  Value: ユーザー名.github.io  Proxy: DNS only</code>
 
 
   <!-- ═══════════════════════════════════════ -->
-  <!-- Phase 3: 以後の更新方法                 -->
+  <!-- Phase 3: Cloudflare Web Analytics 設置  -->
   <!-- ═══════════════════════════════════════ -->
   <div class="phase">
     <div class="phase-header">
       <span class="phase-badge">STEP 3</span>
+      <span class="phase-title">Cloudflare Web Analytics の設置</span>
+      <span class="phase-eta">所要 10分</span>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">3-1</span>
+          <span class="step-title">サイトを登録してビーコンスニペットを発行する</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li>Cloudflare ダッシュボード → 左メニュー「Analytics &amp; Logs」→「Web Analytics」</li>
+            <li>「Add a site」をクリック → <code>teiji-tango.com</code> を入力して追加</li>
+            <li>発行された <code>&lt;script&gt;</code> タグ（下記のような形）をコピーする</li>
+          </ul>
+          <pre><code>&lt;script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+  data-cf-beacon='{"token": "（ここにトークンが入る）"}'&gt;&lt;/script&gt;</code></pre>
+          <div class="note">
+            <strong>なぜ Cloudflare Web Analytics？</strong><br>
+            Google Analytics と違って Cookie を使わず、ユーザーの同意バナーが不要。
+            無料で、PV数・訪問元・国別アクセスなどの基本指標が見られれば十分なこの規模のサイトに最適。
+            Cloudflare Pages に移行した後もそのまま使い続けられる。
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">3-2</span>
+          <span class="step-title">index.html にスニペットを貼り付けて push する</span>
+        </div>
+        <div class="step-body">
+          <ul>
+            <li><code>index.html</code> の <code>&lt;/head&gt;</code> 直前にコピーしたタグを貼り付ける</li>
+            <li>STEP 4 の方法でコミット &amp; push して公開</li>
+            <li>反映後、数分〜数時間ほどでダッシュボードにアクセスが計測され始める</li>
+          </ul>
+          <div class="note">
+            計測が始まらなくても焦らない。初回はデータが集まるまで多少のタイムラグがある。
+            <code>https://teiji-tango.com</code> に自分でアクセスしてみて、ダッシュボードの数字が動くか確認するとよい。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- Phase 4: 以後の更新方法                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-badge">STEP 4</span>
       <span class="phase-title">公開後の更新方法</span>
       <span class="phase-eta">毎回 1分</span>
     </div>
@@ -435,7 +493,7 @@ Type: CNAME  Name: www  Value: ユーザー名.github.io  Proxy: DNS only</code>
     <div class="steps">
       <div class="step">
         <div class="step-head">
-          <span class="step-num">3-1</span>
+          <span class="step-num">4-1</span>
           <span class="step-title">コードを変更したら push するだけ</span>
         </div>
         <div class="step-body">
@@ -450,11 +508,11 @@ git push</code></pre>
 
 
   <!-- ═══════════════════════════════════════ -->
-  <!-- Phase 4: Cloudflare Pages 移行（将来）  -->
+  <!-- Phase 5: Cloudflare Pages 移行（将来）  -->
   <!-- ═══════════════════════════════════════ -->
   <div class="phase">
     <div class="phase-header">
-      <span class="phase-badge future">STEP 4（将来）</span>
+      <span class="phase-badge future">STEP 5（将来）</span>
       <span class="phase-title">Cloudflare Pages への移行</span>
       <span class="phase-eta">月1万PV超えたら検討 / 所要30分</span>
     </div>
@@ -463,7 +521,7 @@ git push</code></pre>
 
       <div class="step">
         <div class="step-head">
-          <span class="step-num">4-1</span>
+          <span class="step-num">5-1</span>
           <span class="step-title">Cloudflare Pages にプロジェクトを作成する</span>
         </div>
         <div class="step-body">
@@ -480,7 +538,7 @@ git push</code></pre>
 
       <div class="step">
         <div class="step-head">
-          <span class="step-num">4-2</span>
+          <span class="step-num">5-2</span>
           <span class="step-title">カスタムドメインを Cloudflare Pages に向ける</span>
         </div>
         <div class="step-body">
@@ -491,14 +549,14 @@ git push</code></pre>
           </ul>
           <div class="note">
             <strong>URL は変わりません。</strong> SEO・ブックマーク・シェアされたリンクすべてそのまま。
-            ダウンタイムもほぼゼロ。
+            ダウンタイムもほぼゼロ。Web Analytics の計測も中断なく継続される。
           </div>
         </div>
       </div>
 
       <div class="step">
         <div class="step-head">
-          <span class="step-num">4-3</span>
+          <span class="step-num">5-3</span>
           <span class="step-title">GitHub Pages のカスタムドメイン設定を削除する（後片付け）</span>
         </div>
         <div class="step-body">
@@ -545,6 +603,11 @@ git push</code></pre>
 
     <label><input type="checkbox"><div>
       <div>https://teiji-tango.com でアクセス確認</div>
+    </div></label>
+
+    <label><input type="checkbox"><div>
+      <div>Cloudflare Web Analytics をサイトに登録 &amp; スニペットを index.html に設置</div>
+      <div class="check-sub">Cookie不要・無料。設置後は数分〜数時間でダッシュボードに反映され始める</div>
     </div></label>
 
     <label><input type="checkbox"><div>

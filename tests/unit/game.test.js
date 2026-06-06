@@ -545,6 +545,21 @@ describe('buildShareText', () => {
     expect(text).toContain('👔');
     expect(text).toContain('🍺');
   });
+
+  test('モード・難易度を指定するとDay表記に併記される', () => {
+    const game = makeGame();
+    fillWithSolution(game);
+    const text = game.buildShareText(1, 30, 0, '👔', '🍺', '🧱 壁あり', '上級');
+    expect(text).toContain('Day 1（🧱 壁あり・上級）');
+  });
+
+  test('モード・難易度を指定しない場合は併記されない', () => {
+    const game = makeGame();
+    fillWithSolution(game);
+    const text = game.buildShareText(1, 30, 0);
+    expect(text).toContain('Day 1\n');
+    expect(text).not.toContain('（');
+  });
 });
 
 // ─── ヘルパー関数 ────────────────────────────────────────────

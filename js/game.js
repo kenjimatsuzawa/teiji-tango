@@ -264,7 +264,7 @@ class TangoGame {
   }
 
   // シェア用テキスト生成
-  buildShareText(puzzleDay, elapsedSecs, hintsUsed, sym1 = '👔', sym2 = '🍺') {
+  buildShareText(puzzleDay, elapsedSecs, hintsUsed, sym1 = '👔', sym2 = '🍺', modeLabel = '', difficulty = '') {
     const lines = this.grid.map(row =>
       row.map(v => v === SHIRT ? sym1 : v === BEER ? sym2 : '⬜').join('')
     );
@@ -272,6 +272,7 @@ class TangoGame {
     const s = (elapsedSecs % 60).toString().padStart(2, '0');
     const timeStr = `⏱ ${m}:${s}`;
     const hintStr = hintsUsed > 0 ? `  💡 ヒント${hintsUsed}回 (+${hintsUsed * 5}秒)` : '';
-    return `定時退社タンゴ Day ${puzzleDay}\n${timeStr}${hintStr}\n\n${lines.join('\n')}\n\n#定時退社タンゴ\nhttps://teiji-tango.com`;
+    const modeStr = (modeLabel || difficulty) ? `（${[modeLabel, difficulty].filter(Boolean).join('・')}）` : '';
+    return `定時退社タンゴ Day ${puzzleDay}${modeStr}\n${timeStr}${hintStr}\n\n${lines.join('\n')}\n\n#定時退社タンゴ\nhttps://teiji-tango.com`;
   }
 }

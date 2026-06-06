@@ -186,75 +186,64 @@ function getAdjacentPairs() {
 }
 
 function tryGeneratePuzzle(solution, targetDiff) {
-  let initial = copyGrid(solution);
-  let constraints = [];
+  // 全難易度「制約先行」アプローチ
+  // 候補制約を先に配置 → セルを削除 → 本当に必要な制約だけ残す
+  const PARAMS = {
+    '初級': { minCells: 14, maxTech: 4, minCon: 2, maxCon: 5 },
+    '中級': { minCells: 10, maxTech: 5, minCon: 2, maxCon: 6 },
+    '上級': { minCells:  7, maxTech: 5, minCon: 1, maxCon: 4 },
+  };
+  const { minCells, maxTech, minCon, maxCon } = PARAMS[targetDiff];
 
-  // 難易度ごとの目標
-  let minCells, maxTechPhase1;
-  if (targetDiff === '初級') {
-    minCells = 18; maxTechPhase1 = 4;
-  } else if (targetDiff === '中級') {
-    minCells = 9; maxTechPhase1 = 5;
-  } else {
-    minCells = 7; maxTechPhase1 = 5;
-  }
+  // Step1: 候補制約を15個生成
+  const candidates = shuffle(getAdjacentPairs()).slice(0, 15).map(pair => ({
+    r1: pair.r1, c1: pair.c1, r2: pair.r2, c2: pair.c2,
+    type: solution[pair.r1][pair.c1] === solution[pair.r2][pair.c2] ? 'eq' : 'neq',
+  }));
 
-  // フェーズ1: セルをランダムに除去（テクニックで解ける間）
+  // Step2: 候補制約を使いながらセルを削除
+  const initial = copyGrid(solution);
   for (const pos of shuffle(Array.from({ length: SIZE * SIZE }, (_, i) => i))) {
-    const r = Math.floor(pos / SIZE);
-    const c = pos % SIZE;
+    const r = Math.floor(pos / SIZE), c = pos % SIZE;
     if (initial[r][c] === EMPTY) continue;
     const saved = initial[r][c];
     initial[r][c] = EMPTY;
     const cellCount = initial.flat().filter(v => v !== EMPTY).length;
-    if (cellCount < minCells || !solve(initial, constraints, maxTechPhase1).solved) {
-      initial[r][c] = saved;
-    }
+    if (cellCount < minCells || !solve(initial, candidates, maxTech).solved) initial[r][c] = saved;
   }
 
-  // フェーズ2: 制約を追加してさらに除去（中級・上級のみ）
-  if (targetDiff !== '初級') {
-    const pairs = shuffle(getAdjacentPairs());
-    for (const pair of pairs) {
-      if (constraints.length >= 7) break;
-      if (constraints.some(c => c.r1 === pair.r1 && c.c1 === pair.c1 && c.r2 === pair.r2 && c.c2 === pair.c2)) continue;
-      // 両セルが空 or 片方が空の制約を優先（両方固定は有用性低）
-      if (initial[pair.r1][pair.c1] !== EMPTY && initial[pair.r2][pair.c2] !== EMPTY) continue;
-      const con = {
-        r1: pair.r1, c1: pair.c1, r2: pair.r2, c2: pair.c2,
-        type: solution[pair.r1][pair.c1] === solution[pair.r2][pair.c2] ? 'eq' : 'neq',
-      };
-      constraints.push(con);
-      // 新しい制約でさらに除去を試みる
-      for (const pos of shuffle(Array.from({ length: SIZE * SIZE }, (_, i) => i))) {
-        const r = Math.floor(pos / SIZE);
-        const c = pos % SIZE;
-        if (initial[r][c] === EMPTY) continue;
-        const saved = initial[r][c];
-        initial[r][c] = EMPTY;
-        const cellCount = initial.flat().filter(v => v !== EMPTY).length;
-        if (cellCount < minCells || !solve(initial, constraints, 5).solved) {
-          initial[r][c] = saved;
-        }
+  // Step3: 反復削除で最小必須制約セットを求める
+  // 一度に全体から個別削除する方法は相互依存を見落とすため反復削除を使用
+  let essential = [...candidates];
+  if (!solve(initial, essential, maxTech).solved) return null;
+  let reduced = true;
+  while (reduced) {
+    reduced = false;
+    for (let i = essential.length - 1; i >= 0; i--) {
+      const without = essential.filter((_, j) => j !== i);
+      if (solve(initial, without, maxTech).solved) {
+        essential = without;
+        reduced = true;
+        break;
       }
     }
   }
+  if (essential.length < minCon || essential.length > maxCon) return null;
 
-  // 実際の難易度を分類
-  const r4 = solve(initial, constraints, 4);
-  const r5 = solve(initial, constraints, 5);
+  // Step4: 難易度を確認（tech5の必要性でクラス分け）
+  const r4 = solve(initial, essential, 4);
+  const r5 = solve(initial, essential, 5);
   if (!r5.solved) return null;
 
   const cellCount = initial.flat().filter(v => v !== EMPTY).length;
   const needsTech5 = !r4.solved;
-  const { rounds } = r5;
 
   let actualDiff;
-  if (!needsTech5 && cellCount >= 18) {
+  if (!needsTech5 && cellCount >= 14) {
     actualDiff = '初級';
-  } else if (needsTech5 && rounds < 5 && cellCount >= 9) {
+  } else if (needsTech5 && cellCount >= 10) {
     actualDiff = '中級';
-  } else if (needsTech5 && (rounds >= 5 || cellCount < 9)) {
+  } else if (needsTech5 && cellCount < 10) {
     actualDiff = '上級';
   } else {
     return null;
@@ -262,15 +251,7 @@ function tryGeneratePuzzle(solution, targetDiff) {
 
   if (actualDiff !== targetDiff) return null;
 
-  // 制約の重複チェック
-  const deduped = [];
-  const seen = new Set();
-  for (const c of constraints) {
-    const key = `${c.r1},${c.c1},${c.r2},${c.c2}`;
-    if (!seen.has(key)) { seen.add(key); deduped.push(c); }
-  }
-
-  return { initial, constraints: deduped, solution };
+  return { initial, constraints: essential, solution };
 }
 
 function generatePuzzles(difficulty, count) {
