@@ -33,6 +33,14 @@ function isModeUnlocked(mode) {
   return Date.now() >= unlockTime;
 }
 
+// ─── フィーチャーフラグ：機能の一時オフ ─────────────────
+// 段階公開（上）とは別に、「実装済みだが初回リリースでは隠したい」機能を on/off するためのフラグ。
+// false の機能はUIから完全に隠れるが、コードはそのまま残るので true に戻すだけで再有効化できる。
+const FEATURE_FLAGS = {
+  themeSwitcher: false, // 寿司・狐テーマはグローバル展開時用に用意したもの。初回はシンプルにするため非表示
+  tentativeMode: false, // 仮置き機能。ソルバー改善でロジックだけで解けるパズルが作れるようになり出番が減ったため一旦オフ
+};
+
 // タイマー
 let timerSecs = 0;
 let timerInterval = null;
@@ -215,6 +223,12 @@ function loadDifficulty(difficulty) {
 
   game = new TangoGame(currentPuzzle);
 
+  const done = isCompletedToday(currentMode, difficulty);
+  if (done) {
+    // 本日クリア済み: 再プレイによるタイマー/記録の汚染を防ぐため、正解を表示して操作不可にする
+    game.grid = currentPuzzle.solution.map(row => [...row]);
+  }
+
   const initialCount = currentPuzzle.initial.flat().filter(v => v !== 0).length;
   document.getElementById('puzzle-day').textContent = `Day ${puzzleDay}`;
   document.getElementById('difficulty').textContent = currentMode === 'killer'
@@ -226,12 +240,20 @@ function loadDifficulty(difficulty) {
   hideHintPanel();
   updateUndoButton();
   renderGrid();
+  setControlsLocked(done);
 
-  if (!isCompletedToday(currentMode, difficulty)) {
+  if (!done) {
     startTimer();
   } else {
-    document.getElementById('timer').textContent = '−:−−';
+    document.getElementById('timer').textContent = '✅ クリア済み';
   }
+}
+
+function setControlsLocked(locked) {
+  ['btn-clear', 'btn-undo', 'btn-tentative', 'btn-hint', 'btn-check'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.disabled = locked;
+  });
 }
 
 function init() {
@@ -277,6 +299,7 @@ function updateTimerDisplay() {
 
 // ─── 仮置きモード ──────────────────────────────
 function enterTentativeMode() {
+  if (!FEATURE_FLAGS.tentativeMode) return;
   tentativeMode = true;
   tentativeSnapshot = game.grid.map(row => [...row]);
   tentativeHistoryLength = game.history.length;
@@ -575,6 +598,7 @@ function updateUndoButton() {
 }
 
 function onCellClick(r, c) {
+  if (isCompletedToday(currentMode, currentDifficulty)) return;
   hintTargetCell = null;
 
   if (!game.toggle(r, c)) return;
@@ -698,6 +722,13 @@ function saveStreak() {
 // ─── イベントリスナー ──────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   init();
+
+  if (!FEATURE_FLAGS.themeSwitcher) {
+    document.querySelector('.theme-switcher')?.classList.add('flag-hidden');
+  }
+  if (!FEATURE_FLAGS.tentativeMode) {
+    document.getElementById('btn-tentative')?.classList.add('flag-hidden');
+  }
 
   document.querySelectorAll('.mode-tab').forEach(btn => {
     btn.addEventListener('click', () => loadMode(btn.dataset.mode));
