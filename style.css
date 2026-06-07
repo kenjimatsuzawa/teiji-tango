@@ -688,6 +688,9 @@ h1 {
 .demo-ok { color: var(--success); font-size: 0.82rem; margin-left: 8px; }
 .demo-ng { color: var(--error);   font-size: 0.82rem; margin-left: 8px; }
 
+/* 壁ありモードのデモ用: セルの右側に壁を模した太線 */
+.demo-cell.wall-r { border-right: 4px solid #555; margin-right: 4px; }
+
 .demo-constraints {
   display: flex;
   flex-direction: column;

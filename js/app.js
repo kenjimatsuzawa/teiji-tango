@@ -189,7 +189,9 @@ function isCompletedToday(mode, diff) {
 function renderModeTabs() {
   document.querySelectorAll('.mode-tab').forEach(btn => {
     const mode = btn.dataset.mode;
-    btn.classList.toggle('mode-locked', !isModeUnlocked(mode));
+    const unlocked = isModeUnlocked(mode);
+    btn.classList.toggle('flag-hidden', !unlocked);
+    btn.classList.toggle('mode-locked', !unlocked);
     btn.classList.toggle('mode-active', mode === currentMode);
   });
 }
