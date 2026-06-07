@@ -409,23 +409,23 @@ describe('formatTime', () => {
 // ────────────────────────────────────────────────────────────────────────────
 
 describe('getDayNumber / JST 日付ロールオーバー', () => {
-  // 基準: 2025-01-01 UTC、UTC 7:00 に切り替わる
+  // 基準: 2026-06-07 UTC、UTC 7:00 に切り替わる
 
-  test('2025-01-01 07:00 UTC ちょうどは Day 1', () => {
-    const t = new Date('2025-01-01T07:00:00Z').getTime();
+  test('2026-06-07 07:00 UTC ちょうどは Day 1', () => {
+    const t = new Date('2026-06-07T07:00:00Z').getTime();
     const { getDayNumber } = loadApp({ nowMs: t });
     expect(getDayNumber()).toBe(1);
   });
 
-  test('2025-01-01 06:59 UTC はまだ Day 0（前日扱い）', () => {
+  test('2026-06-07 06:59 UTC はまだ Day 0（前日扱い）', () => {
     // UTC 6:59 はまだ JST 15:59 → 前日のパズル
-    const t = new Date('2025-01-01T06:59:59Z').getTime();
+    const t = new Date('2026-06-07T06:59:59Z').getTime();
     const { getDayNumber } = loadApp({ nowMs: t });
     expect(getDayNumber()).toBe(0);
   });
 
-  test('2025-01-02 07:00 UTC は Day 2', () => {
-    const t = new Date('2025-01-02T07:00:00Z').getTime();
+  test('2026-06-08 07:00 UTC は Day 2', () => {
+    const t = new Date('2026-06-08T07:00:00Z').getTime();
     const { getDayNumber } = loadApp({ nowMs: t });
     expect(getDayNumber()).toBe(2);
   });

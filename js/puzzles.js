@@ -4107,7 +4107,7 @@ const DIFFICULTIES = ['初級', '中級', '上級'];
 function getDayIndex() {
   // 日本時間16:00（UTC 7:00）に切り替え。LinkedIn版Tangoのリセット時刻に合わせている
   const RESET_HOUR_UTC = 7;
-  const start = new Date('2025-01-01');
+  const start = new Date('2026-06-07');
   const shifted = Date.now() - RESET_HOUR_UTC * 60 * 60 * 1000;
   return Math.floor((shifted - start.getTime()) / (1000 * 60 * 60 * 24));
 }

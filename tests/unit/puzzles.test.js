@@ -362,8 +362,8 @@ describe('getDayIndex', () => {
     expect(idx).toBeGreaterThanOrEqual(0);
   });
 
-  test('2025-01-01 より後の値 (今日は 2026-05-04)', () => {
-    // 2025-01-01 から今日 (2026-05-04) まで 488 日以上経過
-    expect(getDayIndex()).toBeGreaterThanOrEqual(488);
+  test('起点 2026-06-07 以降の値を返す', () => {
+    // 起点を 2026-06-07 に変更。今日以降は常に 0 以上
+    expect(getDayIndex()).toBeGreaterThanOrEqual(0);
   });
 });
