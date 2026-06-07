@@ -531,11 +531,12 @@ describe('buildShareText', () => {
     expect(text).toContain('ヒント3回');
   });
 
-  test('ヒント0回はヒント情報を含まない', () => {
+  test('ヒント0回は「ヒントなし」と表示される', () => {
     const game = makeGame();
     fillWithSolution(game);
     const text = game.buildShareText(1, 60, 0);
-    expect(text).not.toContain('ヒント');
+    expect(text).toContain('ヒントなし');
+    expect(text).not.toContain('ヒント0回');
   });
 
   test('グリッド絵文字が含まれる', () => {

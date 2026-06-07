@@ -271,8 +271,8 @@ class TangoGame {
     const m = Math.floor(elapsedSecs / 60);
     const s = (elapsedSecs % 60).toString().padStart(2, '0');
     const timeStr = `⏱ ${m}:${s}`;
-    const hintStr = hintsUsed > 0 ? `  💡 ヒント${hintsUsed}回 (+${hintsUsed * 5}秒)` : '';
+    const hintStr = hintsUsed > 0 ? `  💡 ヒント${hintsUsed}回 (+${hintsUsed * 5}秒)` : '  ✨ ヒントなし';
     const modeStr = (modeLabel || difficulty) ? `（${[modeLabel, difficulty].filter(Boolean).join('・')}）` : '';
-    return `定時退社タンゴ Day ${puzzleDay}${modeStr}\n${timeStr}${hintStr}\n\n${lines.join('\n')}\n\n#定時退社タンゴ\nhttps://teiji-tango.com`;
+    return `定時退社！🏃💨\n定時退社タンゴ Day ${puzzleDay}${modeStr}\n${timeStr}${hintStr}\n\n${lines.join('\n')}\n\n#定時退社タンゴ https://teiji-tango.com`;
   }
 }
