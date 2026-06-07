@@ -735,6 +735,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-tentative')?.classList.add('flag-hidden');
   }
 
+  // モード解禁日前はhowtoの該当モード説明も隠す
+  [['region', 'howto-region'], ['x', 'howto-x'], ['killer', 'howto-killer']].forEach(([mode, id]) => {
+    if (!isModeUnlocked(mode)) document.getElementById(id)?.classList.add('flag-hidden');
+  });
+
   document.querySelectorAll('.mode-tab').forEach(btn => {
     btn.addEventListener('click', () => loadMode(btn.dataset.mode));
   });
