@@ -688,8 +688,16 @@ h1 {
 .demo-ok { color: var(--success); font-size: 0.82rem; margin-left: 8px; }
 .demo-ng { color: var(--error);   font-size: 0.82rem; margin-left: 8px; }
 
-/* 壁ありモードのデモ用: セルの右側に壁を模した太線 */
-.demo-cell.wall-r { border-right: 4px solid #555; margin-right: 4px; }
+/* 壁ありモードのデモ用: セル間に壁を模した縦線 */
+.demo-wall-marker {
+  display: inline-block;
+  width: 4px;
+  height: 34px;
+  background: #555;
+  border-radius: 2px;
+  margin: 0 2px;
+  vertical-align: middle;
+}
 
 .demo-constraints {
   display: flex;
