@@ -41,10 +41,15 @@ const FEATURE_FLAGS = {
   tentativeMode: false, // 仮置き機能。ソルバー改善でロジックだけで解けるパズルが作れるようになり出番が減ったため一旦オフ
 };
 
+function gaEvent(name, params) {
+  if (typeof gtag === 'function') gtag('event', name, params || {});
+}
+
 // タイマー
 let timerSecs = 0;
 let timerInterval = null;
 let hintsUsed = 0;
+let puzzleStarted = false;
 
 // ヒントハイライト中のセル
 let hintTargetCell = null;
@@ -225,6 +230,7 @@ function loadDifficulty(difficulty) {
   hintTargetCell = null;
   tentativeMode = false;
   tentativeSnapshot = null;
+  puzzleStarted = false;
 
   game = new TangoGame(currentPuzzle);
 
@@ -607,6 +613,11 @@ function onCellClick(r, c) {
   hintTargetCell = null;
 
   if (!game.toggle(r, c)) return;
+
+  if (!puzzleStarted) {
+    puzzleStarted = true;
+    gaEvent('puzzle_start', { mode: currentMode, difficulty: currentDifficulty });
+  }
   updateUndoButton();
   renderGrid();
 
@@ -662,6 +673,7 @@ function showResult(won) {
   modeLabelEl.textContent = `${getModeLabel(currentMode)}・${currentDifficulty}`;
 
   if (won) {
+    gaEvent('puzzle_complete', { mode: currentMode, difficulty: currentDifficulty, time_seconds: timerSecs, hints_used: hintsUsed });
     emoji.textContent = '🎉';
     title.textContent = '定時退社！';
     const hintNote = hintsUsed > 0 ? `（ヒント${hintsUsed}回使用）` : '';
@@ -795,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     hintsUsed++;
+    gaEvent('hint_used', { mode: currentMode, difficulty: currentDifficulty, hint_count: hintsUsed });
     addHintPenalty();
     hintTargetCell = { r: hint.r, c: hint.c };
     renderGrid();
@@ -822,15 +835,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-share-x').addEventListener('click', () => {
+    gaEvent('share_clicked', { method: 'x', mode: currentMode, difficulty: currentDifficulty });
     const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
     window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   });
 
   document.getElementById('btn-share-fb').addEventListener('click', () => {
+    gaEvent('share_clicked', { method: 'facebook', mode: currentMode, difficulty: currentDifficulty });
     window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent('https://teiji-tango.com'), '_blank');
   });
 
   document.getElementById('btn-share-copy').addEventListener('click', () => {
+    gaEvent('share_clicked', { method: 'copy', mode: currentMode, difficulty: currentDifficulty });
     const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
     const btn = document.getElementById('btn-share-copy');
     if (navigator.share) {
