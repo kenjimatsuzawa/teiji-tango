@@ -13,8 +13,25 @@ const MODE_LABELS = {
   x:      'Xタンゴ',
   killer: '🔪 キラータンゴ',
 };
+const MODE_LABELS_EN = {
+  normal: 'Standard',
+  wall:   '🧱 Walls',
+  region: '🗂️ Regions',
+  x:      'X-Tango',
+  killer: '🔪 Killer',
+};
 function getModeLabel(mode) {
-  return MODE_LABELS[mode] || mode;
+  return MODE_LABELS[mode] || mode; // 常に日本語（シェアテキスト用）
+}
+function getModeDisplayLabel(mode) {
+  return LANG === 'ja' ? (MODE_LABELS[mode] || mode) : (MODE_LABELS_EN[mode] || mode);
+}
+function getDiffDisplayLabel(diff) {
+  if (LANG === 'ja') return diff;
+  if (diff === '初級') return t('diff_easy');
+  if (diff === '中級') return t('diff_mid');
+  if (diff === '上級') return t('diff_hard');
+  return diff;
 }
 
 // ─── フィーチャーフラグ：モードの段階公開 ──────────────
@@ -40,6 +57,145 @@ const FEATURE_FLAGS = {
   themeSwitcher: false, // 寿司・狐テーマはグローバル展開時用に用意したもの。初回はシンプルにするため非表示
   tentativeMode: false, // 仮置き機能。ソルバー改善でロジックだけで解けるパズルが作れるようになり出番が減ったため一旦オフ
 };
+
+// ─── 多言語対応 ─────────────────────────────────
+const LANG = (typeof navigator !== 'undefined' ? (navigator.language || 'ja') : 'ja').startsWith('ja') ? 'ja' : 'en';
+
+const I18N = {
+  subtitle:       { ja: '今日もバランスよく定時退社しよう', en: 'Balance work and fun — clock out on time!' },
+  streak_label:   { ja: '日連続', en: ' day streak' },
+  mode_normal:    { ja: '通常', en: 'Standard' },
+  mode_wall:      { ja: '🧱 壁あり', en: '🧱 Walls' },
+  mode_region:    { ja: '🗂️ エリア', en: '🗂️ Regions' },
+  mode_x:         { ja: 'Xタンゴ', en: 'X-Tango' },
+  mode_killer:    { ja: '🔪 キラータンゴ', en: '🔪 Killer' },
+  diff_easy:      { ja: '初級', en: 'Easy' },
+  diff_mid:       { ja: '中級', en: 'Medium' },
+  diff_hard:      { ja: '上級', en: 'Hard' },
+  legend1:        { ja: '出社', en: 'Work' },
+  legend2:        { ja: '退社', en: 'Beer' },
+  rules_hint:     { ja: '2種類の記号は<strong>3連続はNG</strong>・各行列は<strong>同数</strong>', en: 'No <strong>3 in a row</strong> · Equal count per row &amp; column' },
+  btn_reset:      { ja: 'リセット', en: 'Reset' },
+  btn_undo:       { ja: '↩ 戻す', en: '↩ Undo' },
+  btn_hint:       { ja: '💡 ヒント', en: '💡 Hint' },
+  btn_check:      { ja: '確認する', en: 'Check' },
+  btn_next:       { ja: '次のパズルへ', en: 'Next Puzzle' },
+  btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
+  btn_share_fb:   { ja: 'Facebookでシェア', en: 'Share on Facebook' },
+  btn_share_copy: { ja: '📋 コピー', en: '📋 Copy' },
+  btn_copied:     { ja: '✅ コピーしました！', en: '✅ Copied!' },
+  hint_penalty:   { ja: '+5秒', en: '+5 sec' },
+  hint_default:   { ja: '💡 ヒント', en: '💡 Hint' },
+  result_win:     { ja: '定時退社！', en: 'Clocked Out! 🏃' },
+  result_lose:    { ja: '残業確定...', en: 'Overtime... 😢' },
+  result_win_msg: {
+    ja: (time, hints) => `お疲れ様でした！ ${time} でクリア${hints > 0 ? `（ヒント${hints}回使用）` : ''}`,
+    en: (time, hints) => `Well done! Solved in ${time}${hints > 0 ? ` (${hints} hint${hints > 1 ? 's' : ''})` : ''}`,
+  },
+  result_lose_msg: { ja: 'どこかバランスが崩れています。もう一度確認してみよう！', en: "Something's off — check your grid!" },
+  result_new_best: { ja: (t) => `🏆 新記録！ ${t}`, en: (t) => `🏆 New best! ${t}` },
+  result_best:     { ja: (t) => `ベストタイム ${t}`, en: (t) => `Best: ${t}` },
+  clue_count:      { ja: (n) => `手がかり${n}個`, en: (n) => `Clues: ${n}` },
+  cage_count:      { ja: (n) => `枠${n}個`, en: (n) => `Cages: ${n}` },
+  done_label:      { ja: '✅ クリア済み', en: '✅ Done!' },
+  new_ach_label:   { ja: '🏅 新しい実績', en: '🏅 New Achievement' },
+  howto_title:     { ja: '遊び方', en: 'How to Play' },
+  ach_title:       { ja: '🏅 実績', en: '🏅 Achievements' },
+};
+
+function t(key) {
+  const entry = I18N[key];
+  if (!entry) return key;
+  return entry[LANG] !== undefined ? entry[LANG] : entry.ja;
+}
+
+function applyHowtoI18n() {
+  const S = document.querySelectorAll('#howto-modal .howto-section');
+  const setText = (el, txt) => { if (el) el.textContent = txt; };
+  const setHTML = (el, html) => { if (el) el.innerHTML = html; };
+
+  setText(S[0]?.querySelector('h3'), '🎯 Goal');
+  setText(S[0]?.querySelector('p'), 'Fill all cells using 👔 and 🍺 following three rules!');
+
+  setText(S[1]?.querySelector('h3'), '👆 Controls');
+  setText(S[1]?.querySelector('p'), 'Tap a cell to cycle through symbols');
+
+  setText(S[2]?.querySelector('h3'), 'Rule 1: Balance');
+  setHTML(S[2]?.querySelector('p'), 'Each row and column must have exactly <strong>3 👔 and 3 🍺</strong>');
+  setText(S[2]?.querySelector('.demo-ng'), '❌ Unbalanced');
+
+  setText(S[3]?.querySelector('h3'), 'Rule 2: No 3 in a Row');
+  setHTML(S[3]?.querySelector('p'), 'No <strong>3 identical symbols</strong> in a row (horizontally or vertically)');
+
+  setText(S[4]?.querySelector('h3'), 'Rule 3: Constraints');
+  setText(S[4]?.querySelector('p'), 'Follow the markers between cells');
+  const descs = S[4]?.querySelectorAll('.demo-con-desc');
+  if (descs) {
+    setHTML(descs[0], '<strong>=</strong> Same symbol');
+    setHTML(descs[1], '<strong>×</strong> Different symbol');
+  }
+
+  setText(S[5]?.querySelector('h3'), '🧱 Walls Mode (extra rule)');
+  setText(S[5]?.querySelector('p'), 'Thick borders block the chain — three-in-a-row does NOT count across a wall.');
+  setText(S[5]?.querySelector('.demo-ok'), '✅ OK across a wall');
+  setText(S[5]?.querySelector('.demo-ng'), '❌ 3 in a row (no wall)');
+
+  const killer = document.getElementById('howto-killer');
+  setText(killer?.querySelector('h3'), '🔪 Killer Mode');
+  setText(killer?.querySelector('p'), 'Cells are grouped into cages. The number shows how many 🍺 are inside.');
+  setText(killer?.querySelector('.demo-ok'), '✅ 2 🍺 inside');
+  setText(killer?.querySelector('.howto-note'), 'No given cells — start from a blank grid!');
+
+  const xMode = document.getElementById('howto-x');
+  setText(xMode?.querySelector('h3'), 'X-Tango Mode (extra rule)');
+  setText(xMode?.querySelector('p'), 'The two diagonals (purple) must also have 3 👔 and 3 🍺 each, with no 3 in a row!');
+
+  const region = document.getElementById('howto-region');
+  setText(region?.querySelector('h3'), '🗂️ Regions Mode (extra rule)');
+  setText(region?.querySelector('p'), 'The grid is split into 6 regions. Each region must also have exactly 3 👔 and 3 🍺!');
+
+  setText(S[9]?.querySelector('h3'), '💡 Hint');
+  setText(S[9]?.querySelector('p'), 'Press 💡 Hint to reveal the next move and the reason.');
+  setText(S[9]?.querySelector('.howto-note'), '⚠️ +5 sec penalty per hint used');
+
+  setText(S[10]?.querySelector('h3'), '⏱ Timer & Share');
+  setText(S[10]?.querySelector('p'), 'Timer starts on your first tap. Share your grid after solving!');
+}
+
+function applyI18n() {
+  if (LANG === 'ja') return;
+
+  document.querySelector('.subtitle').textContent = t('subtitle');
+  document.getElementById('streak-label').textContent = t('streak_label');
+
+  document.querySelector('[data-mode="normal"]').textContent  = t('mode_normal');
+  document.querySelector('[data-mode="wall"]').textContent    = t('mode_wall');
+  document.querySelector('[data-mode="region"]').textContent  = t('mode_region');
+  document.querySelector('[data-mode="x"]').textContent       = t('mode_x');
+  document.querySelector('[data-mode="killer"]').textContent  = t('mode_killer');
+
+  document.querySelector('[data-diff="初級"]').textContent = t('diff_easy');
+  document.querySelector('[data-diff="中級"]').textContent = t('diff_mid');
+  document.querySelector('[data-diff="上級"]').textContent = t('diff_hard');
+
+  document.getElementById('legend-label1').textContent = t('legend1');
+  document.getElementById('legend-label2').textContent = t('legend2');
+  document.querySelector('.rules-hint p').innerHTML = t('rules_hint');
+
+  document.getElementById('btn-clear').textContent  = t('btn_reset');
+  document.getElementById('btn-undo').textContent   = t('btn_undo');
+  document.getElementById('btn-hint').textContent   = t('btn_hint');
+  document.getElementById('btn-check').textContent  = t('btn_check');
+  document.getElementById('btn-next').textContent   = t('btn_next');
+  document.getElementById('btn-share-x').textContent   = t('btn_share_x');
+  document.getElementById('btn-share-fb').textContent  = t('btn_share_fb');
+  document.getElementById('btn-share-copy').textContent = t('btn_share_copy');
+
+  document.querySelector('#howto-modal h2').textContent = t('howto_title');
+  document.querySelector('#ach-modal h2').textContent   = t('ach_title');
+
+  applyHowtoI18n();
+}
 
 function gaEvent(name, params) {
   if (typeof gtag === 'function') gtag('event', name, params || {});
@@ -95,14 +251,14 @@ function applyTheme(theme) {
 
 // ─── 実績 ────────────────────────────────────
 const ACHIEVEMENTS = [
-  { id: 'first_clear', icon: '🎯', name: 'はじめての定時退社', desc: '初めてクリア' },
-  { id: 'no_hint',     icon: '🎖️', name: 'ノーヒント退社',    desc: 'ヒントなしでクリア' },
-  { id: 'speed_easy',  icon: '⚡', name: 'スピード退社',       desc: '初級を2分以内でクリア' },
-  { id: 'clear_mid',   icon: '🧠', name: '中堅社員',           desc: '中級をクリア' },
-  { id: 'clear_hard',  icon: '👑', name: 'エース社員',         desc: '上級をクリア' },
-  { id: 'streak_3',    icon: '🔥', name: '3日連続',            desc: '3日連続でプレイ' },
-  { id: 'streak_7',    icon: '💫', name: '7日連続',            desc: '7日連続でプレイ' },
-  { id: 'all_diff',    icon: '⭐', name: '三冠達成',           desc: '1日で3難易度全てクリア' },
+  { id: 'first_clear', icon: '🎯', name: LANG==='ja'?'はじめての定時退社':'First Clear',   desc: LANG==='ja'?'初めてクリア':'Complete your first puzzle' },
+  { id: 'no_hint',     icon: '🎖️', name: LANG==='ja'?'ノーヒント退社':'No-Hint Clear',   desc: LANG==='ja'?'ヒントなしでクリア':'Solve without hints' },
+  { id: 'speed_easy',  icon: '⚡',  name: LANG==='ja'?'スピード退社':'Speed Clear',        desc: LANG==='ja'?'初級を2分以内でクリア':'Solve Easy in under 2 min' },
+  { id: 'clear_mid',   icon: '🧠',  name: LANG==='ja'?'中堅社員':'Mid-level Staff',        desc: LANG==='ja'?'中級をクリア':'Solve a Medium puzzle' },
+  { id: 'clear_hard',  icon: '👑',  name: LANG==='ja'?'エース社員':'Ace Employee',          desc: LANG==='ja'?'上級をクリア':'Solve a Hard puzzle' },
+  { id: 'streak_3',    icon: '🔥',  name: LANG==='ja'?'3日連続':'3-Day Streak',             desc: LANG==='ja'?'3日連続でプレイ':'Play 3 days in a row' },
+  { id: 'streak_7',    icon: '💫',  name: LANG==='ja'?'7日連続':'7-Day Streak',             desc: LANG==='ja'?'7日連続でプレイ':'Play 7 days in a row' },
+  { id: 'all_diff',    icon: '⭐',  name: LANG==='ja'?'三冠達成':'Triple Crown',            desc: LANG==='ja'?'1日で3難易度全てクリア':'Clear all 3 difficulties in one day' },
 ];
 
 function getEarnedIds() {
@@ -151,7 +307,7 @@ function renderAchievementsModal() {
 function renderResultAchievements(achs) {
   const el = document.getElementById('result-achievements');
   if (!achs || achs.length === 0) { el.innerHTML = ''; return; }
-  el.innerHTML = `<div class="result-ach-label">🏅 新しい実績</div>` +
+  el.innerHTML = `<div class="result-ach-label">${t('new_ach_label')}</div>` +
     achs.map(a => `<div class="result-ach-item">${a.icon} ${a.name}</div>`).join('');
 }
 
@@ -243,8 +399,8 @@ function loadDifficulty(difficulty) {
   const initialCount = currentPuzzle.initial.flat().filter(v => v !== 0).length;
   document.getElementById('puzzle-day').textContent = `Day ${puzzleDay}`;
   document.getElementById('difficulty').textContent = currentMode === 'killer'
-    ? `枠${currentPuzzle.cages.length}個`
-    : `手がかり${initialCount}個`;
+    ? t('cage_count')(currentPuzzle.cages.length)
+    : t('clue_count')(initialCount);
 
   renderDifficultyTabs();
   renderBestTime(currentMode, difficulty);
@@ -256,7 +412,7 @@ function loadDifficulty(difficulty) {
   if (!done) {
     startTimer();
   } else {
-    document.getElementById('timer').textContent = '✅ クリア済み';
+    document.getElementById('timer').textContent = t('done_label');
   }
 }
 
@@ -670,24 +826,23 @@ function showResult(won) {
   const msg   = document.getElementById('result-message');
   const shareText = document.getElementById('share-text');
 
-  modeLabelEl.textContent = `${getModeLabel(currentMode)}・${currentDifficulty}`;
+  modeLabelEl.textContent = `${getModeDisplayLabel(currentMode)}・${getDiffDisplayLabel(currentDifficulty)}`;
 
   if (won) {
     gaEvent('puzzle_complete', { mode: currentMode, difficulty: currentDifficulty, time_seconds: timerSecs, hints_used: hintsUsed });
     emoji.textContent = '🎉';
-    title.textContent = '定時退社！';
-    const hintNote = hintsUsed > 0 ? `（ヒント${hintsUsed}回使用）` : '';
-    msg.textContent = `お疲れ様でした！ ${formatTime(timerSecs)} でクリア${hintNote}`;
+    title.textContent = t('result_win');
+    msg.textContent = t('result_win_msg')(formatTime(timerSecs), hintsUsed);
 
     const isNewBest = tryUpdateBestTime(currentMode, currentDifficulty, timerSecs);
     renderBestTime(currentMode, currentDifficulty);
     const bestEl = document.getElementById('result-best');
     if (isNewBest) {
-      bestEl.textContent = `🏆 新記録！ ${formatTime(timerSecs)}`;
+      bestEl.textContent = t('result_new_best')(formatTime(timerSecs));
       bestEl.className = 'result-best new-record';
     } else {
       const best = getBestTime(currentMode, currentDifficulty);
-      bestEl.textContent = `ベストタイム ${formatTime(best)}`;
+      bestEl.textContent = t('result_best')(formatTime(best));
       bestEl.className = 'result-best';
     }
 
@@ -699,8 +854,8 @@ function showResult(won) {
     document.getElementById('share-buttons').style.display = 'flex';
   } else {
     emoji.textContent = '😢';
-    title.textContent = '残業確定...';
-    msg.textContent   = 'どこかバランスが崩れています。もう一度確認してみよう！';
+    title.textContent = t('result_lose');
+    msg.textContent   = t('result_lose_msg');
     document.getElementById('result-best').textContent = '';
     document.getElementById('result-achievements').innerHTML = '';
     shareText.textContent = '';
@@ -853,8 +1008,8 @@ document.addEventListener('DOMContentLoaded', () => {
       navigator.share({ text });
     } else {
       navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = '✅ コピーしました！';
-        setTimeout(() => { btn.textContent = '📋 コピー'; }, 2000);
+        btn.textContent = t('btn_copied');
+        setTimeout(() => { btn.textContent = t('btn_share_copy'); }, 2000);
       });
     }
   });
@@ -887,4 +1042,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.addEventListener('resize', () => { renderConstraints(); renderWalls(); renderRegionBorders(); renderKillerCages(); });
+
+  applyI18n();
 });
