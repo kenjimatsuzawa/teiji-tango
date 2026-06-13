@@ -264,13 +264,18 @@ class TangoGame {
   }
 
   // シェア用テキスト生成
-  buildShareText(puzzleDay, elapsedSecs, hintsUsed, sym1 = '👔', sym2 = '🍺', modeLabel = '', difficulty = '') {
+  buildShareText(puzzleDay, elapsedSecs, hintsUsed, sym1 = '👔', sym2 = '🍺', modeLabel = '', difficulty = '', lang = 'ja') {
     const lines = this.grid.map(row =>
       row.map(v => v === SHIRT ? sym1 : v === BEER ? sym2 : '⬜').join('')
     );
     const m = Math.floor(elapsedSecs / 60);
     const s = (elapsedSecs % 60).toString().padStart(2, '0');
     const timeStr = `⏱ ${m}:${s}`;
+    if (lang === 'en') {
+      const hintStr = hintsUsed > 0 ? `  💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} (+${hintsUsed * 5}s)` : '  ✨ No hints';
+      const modeStr = (modeLabel || difficulty) ? ` (${[modeLabel, difficulty].filter(Boolean).join(' · ')})` : '';
+      return `Clocked Out! 🏃💨\nTeiji-Tango Day ${puzzleDay}${modeStr}\n${timeStr}${hintStr}\n\n${lines.join('\n')}\n\n#TeijiTango https://teiji-tango.com`;
+    }
     const hintStr = hintsUsed > 0 ? `  💡 ヒント${hintsUsed}回 (+${hintsUsed * 5}秒)` : '  ✨ ヒントなし';
     const modeStr = (modeLabel || difficulty) ? `（${[modeLabel, difficulty].filter(Boolean).join('・')}）` : '';
     return `定時退社！🏃💨\n定時退社タンゴ Day ${puzzleDay}${modeStr}\n${timeStr}${hintStr}\n\n${lines.join('\n')}\n\n#定時退社タンゴ https://teiji-tango.com`;

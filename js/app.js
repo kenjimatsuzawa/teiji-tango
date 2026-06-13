@@ -849,7 +849,7 @@ function showResult(won) {
     saveStreak();
     const newAchs = checkAndEarnAchievements(currentDifficulty, timerSecs, hintsUsed);
     renderResultAchievements(newAchs);
-    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
+    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeDisplayLabel(currentMode), getDiffDisplayLabel(currentDifficulty), LANG);
     shareText.textContent = text;
     document.getElementById('share-buttons').style.display = 'flex';
   } else {
@@ -991,7 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-share-x').addEventListener('click', () => {
     gaEvent('share_clicked', { method: 'x', mode: currentMode, difficulty: currentDifficulty });
-    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
+    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeDisplayLabel(currentMode), getDiffDisplayLabel(currentDifficulty), LANG);
     window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   });
 
@@ -1002,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btn-share-copy').addEventListener('click', () => {
     gaEvent('share_clicked', { method: 'copy', mode: currentMode, difficulty: currentDifficulty });
-    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeLabel(currentMode), currentDifficulty);
+    const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeDisplayLabel(currentMode), getDiffDisplayLabel(currentDifficulty), LANG);
     const btn = document.getElementById('btn-share-copy');
     if (navigator.share) {
       navigator.share({ text });
