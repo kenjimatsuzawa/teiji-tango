@@ -927,12 +927,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-clear').addEventListener('click', () => {
     if (tentativeMode) discardTentative();
     game.reset();
-    stopTimer();
     hintsUsed = 0;
     hideHintPanel();
     updateUndoButton();
     renderGrid();
-    if (!isCompletedToday(currentMode, currentDifficulty)) startTimer();
   });
 
   document.getElementById('btn-undo').addEventListener('click', () => {
