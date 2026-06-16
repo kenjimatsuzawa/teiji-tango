@@ -83,6 +83,7 @@ const I18N = {
   btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
   btn_share_fb:   { ja: 'Facebookでシェア', en: 'Share on Facebook' },
   btn_share_copy: { ja: '📋 コピー', en: '📋 Copy' },
+  kofi_label:     { ja: '気に入ったら支援してね', en: 'Support on Ko-fi' },
   btn_copied:     { ja: '✅ コピーしました！', en: '✅ Copied!' },
   hint_penalty:   { ja: '+5秒', en: '+5 sec' },
   hint_default:   { ja: '💡 ヒント', en: '💡 Hint' },
@@ -190,6 +191,7 @@ function applyI18n() {
   document.getElementById('btn-share-x').textContent   = t('btn_share_x');
   document.getElementById('btn-share-fb').textContent  = t('btn_share_fb');
   document.getElementById('btn-share-copy').textContent = t('btn_share_copy');
+  document.getElementById('kofi-label').textContent     = t('kofi_label');
 
   document.querySelector('#howto-modal h2').textContent = t('howto_title');
   document.querySelector('#ach-modal h2').textContent   = t('ach_title');
