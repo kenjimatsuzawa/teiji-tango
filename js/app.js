@@ -1029,6 +1029,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === howtoModal) howtoModal.classList.add('hidden');
   });
 
+  // 初回訪問時にhowtoモーダルを自動表示
+  if (!localStorage.getItem('howto_seen')) {
+    howtoModal.classList.remove('hidden');
+    localStorage.setItem('howto_seen', '1');
+  }
+
   const achModal = document.getElementById('ach-modal');
   document.getElementById('btn-ach').addEventListener('click', () => {
     renderAchievementsModal();
