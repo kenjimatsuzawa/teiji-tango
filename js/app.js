@@ -1029,10 +1029,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === howtoModal) howtoModal.classList.add('hidden');
   });
 
-  // 初回訪問時にhowtoモーダルを自動表示
-  if (!localStorage.getItem('howto_seen')) {
+  // 初回訪問時 & 新モード解禁時にhowtoモーダルを自動表示
+  // バージョン = 1（基本） + 解禁済みモード数（エリア/Xタンゴ/キラー各+1）
+  const howtoVersion = 1 + ['region', 'x', 'killer'].filter(isModeUnlocked).length;
+  if (Number(localStorage.getItem('howto_seen') || 0) < howtoVersion) {
     howtoModal.classList.remove('hidden');
-    localStorage.setItem('howto_seen', '1');
+    localStorage.setItem('howto_seen', String(howtoVersion));
   }
 
   const achModal = document.getElementById('ach-modal');
