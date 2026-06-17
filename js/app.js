@@ -1019,22 +1019,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const howtoModal = document.getElementById('howto-modal');
+  // バージョン = 1（基本） + 解禁済みモード数（エリア/Xタンゴ/キラー各+1）
+  const howtoVersion = 1 + ['region', 'x', 'killer'].filter(isModeUnlocked).length;
+
+  function closeHowto() {
+    howtoModal.classList.add('hidden');
+    localStorage.setItem('howto_seen', String(howtoVersion));
+  }
+
   document.getElementById('btn-howto').addEventListener('click', () => {
     howtoModal.classList.remove('hidden');
   });
-  document.getElementById('btn-howto-close').addEventListener('click', () => {
-    howtoModal.classList.add('hidden');
-  });
+  document.getElementById('btn-howto-close').addEventListener('click', closeHowto);
   howtoModal.addEventListener('click', e => {
-    if (e.target === howtoModal) howtoModal.classList.add('hidden');
+    if (e.target === howtoModal) closeHowto();
   });
 
-  // 初回訪問時 & 新モード解禁時にhowtoモーダルを自動表示
-  // バージョン = 1（基本） + 解禁済みモード数（エリア/Xタンゴ/キラー各+1）
-  const howtoVersion = 1 + ['region', 'x', 'killer'].filter(isModeUnlocked).length;
+  // 初回訪問時 & 新モード解禁時にhowtoモーダルを自動表示（閉じるまで何度でも表示）
   if (Number(localStorage.getItem('howto_seen') || 0) < howtoVersion) {
     howtoModal.classList.remove('hidden');
-    localStorage.setItem('howto_seen', String(howtoVersion));
   }
 
   const achModal = document.getElementById('ach-modal');
