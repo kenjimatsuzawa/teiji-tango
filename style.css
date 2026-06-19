@@ -1145,6 +1145,21 @@ h1 {
 }
 .escape-link:hover { background: rgba(74, 144, 217, 0.24); }
 
+.confirm-content {
+  padding: 28px 24px 20px;
+}
+.confirm-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.confirm-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .result-escape-link {
   display: block;
   margin-top: 14px;

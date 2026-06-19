@@ -83,6 +83,8 @@ const I18N = {
   btn_back:       { ja: 'ゲームに戻る', en: 'Back to Game' },
   btn_start:      { ja: '▶ スタート', en: '▶ Start' },
   btn_howto:      { ja: '遊び方', en: 'How to Play' },
+  confirm_quit:   { ja: 'ゲームを終了しますか？', en: 'Quit this game?' },
+  confirm_yes:    { ja: 'はい', en: 'Yes, quit' },
   btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
   btn_share_fb:   { ja: 'Facebookでシェア', en: 'Share on Facebook' },
   btn_share_copy: { ja: '📋 コピー', en: '📋 Copy' },
@@ -192,8 +194,11 @@ function applyI18n() {
   document.getElementById('btn-hint').textContent   = t('btn_hint');
   document.getElementById('btn-check').textContent  = t('btn_check');
   document.getElementById('btn-next').textContent   = t('btn_next');
-  document.getElementById('btn-start').textContent  = t('btn_start');
-  document.getElementById('btn-howto').textContent  = t('btn_howto');
+  document.getElementById('btn-start').textContent      = t('btn_start');
+  document.getElementById('btn-howto').textContent      = t('btn_howto');
+  document.getElementById('confirm-title').textContent  = t('confirm_quit');
+  document.getElementById('btn-confirm-yes').textContent  = t('confirm_yes');
+  document.getElementById('btn-confirm-back').textContent = t('btn_back');
   document.getElementById('btn-share-x').textContent   = t('btn_share_x');
   document.getElementById('btn-share-fb').textContent  = t('btn_share_fb');
   document.getElementById('btn-share-copy').textContent = t('btn_share_copy');
@@ -925,11 +930,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.mode-tab').forEach(btn => {
-    btn.addEventListener('click', () => loadMode(btn.dataset.mode));
+    btn.addEventListener('click', () => confirmOrRun(() => loadMode(btn.dataset.mode)));
   });
 
   document.querySelectorAll('.diff-tab').forEach(btn => {
-    btn.addEventListener('click', () => loadDifficulty(btn.dataset.diff));
+    btn.addEventListener('click', () => confirmOrRun(() => loadDifficulty(btn.dataset.diff)));
   });
 
   document.querySelectorAll('.theme-btn').forEach(btn => {
@@ -1041,6 +1046,25 @@ document.addEventListener('DOMContentLoaded', () => {
     howtoModal.classList.add('hidden');
     localStorage.setItem('howto_seen', String(howtoVersion));
   }
+
+  let pendingAction = null;
+  const confirmModal = document.getElementById('confirm-modal');
+
+  function confirmOrRun(action) {
+    if (!timerInterval) { action(); return; }
+    pendingAction = action;
+    confirmModal.classList.remove('hidden');
+  }
+
+  document.getElementById('btn-confirm-yes').addEventListener('click', () => {
+    confirmModal.classList.add('hidden');
+    if (pendingAction) { pendingAction(); pendingAction = null; }
+  });
+
+  document.getElementById('btn-confirm-back').addEventListener('click', () => {
+    confirmModal.classList.add('hidden');
+    pendingAction = null;
+  });
 
   document.getElementById('btn-start').addEventListener('click', () => {
     document.getElementById('start-overlay').classList.add('hidden');
