@@ -1,4 +1,4 @@
-const CACHE = 'teiji-tango-v32';
+const CACHE = 'teiji-tango-v33';
 const ASSETS = [
   '/',
   '/index.html',

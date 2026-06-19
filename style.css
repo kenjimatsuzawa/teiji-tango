@@ -616,6 +616,7 @@ h1 {
 .howto-header h2 {
   font-size: 1.2rem;
   font-weight: 700;
+  white-space: nowrap;
   background: linear-gradient(135deg, var(--shirt-color), var(--beer-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
