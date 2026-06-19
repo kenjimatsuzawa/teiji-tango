@@ -70,7 +70,7 @@
   <div id="app">
     <header>
       <div class="header-inner">
-        <button id="btn-howto" class="btn-howto" aria-label="遊び方">？</button>
+        <button id="btn-howto" class="btn-howto" aria-label="遊び方">遊び方</button>
         <h1>定時退社タンゴ</h1>
         <div class="header-right">
           <div class="streak">🔥 <span id="streak-count">0</span><span id="streak-label">日連続</span></div>
@@ -83,7 +83,7 @@
     <main>
       <div id="game-area">
         <div id="puzzle-info">
-          <span id="puzzle-day">Day 1</span>
+          <span id="puzzle-day" style="display:none">Day 1</span>
           <span id="difficulty"></span>
           <div class="timer-group">
             <span id="timer" class="timer-display">0:00</span>
@@ -107,6 +107,9 @@
 
         <div id="grid-container">
           <div id="grid"></div>
+          <div id="start-overlay" class="start-overlay hidden">
+            <button id="btn-start" class="btn-start">▶ スタート</button>
+          </div>
         </div>
 
         <div class="legend">

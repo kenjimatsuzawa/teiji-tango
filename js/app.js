@@ -81,6 +81,8 @@ const I18N = {
   btn_check:      { ja: '確認する', en: 'Check' },
   btn_next:       { ja: '次のパズルへ', en: 'Next Puzzle' },
   btn_back:       { ja: 'ゲームに戻る', en: 'Back to Game' },
+  btn_start:      { ja: '▶ スタート', en: '▶ Start' },
+  btn_howto:      { ja: '遊び方', en: 'How to Play' },
   btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
   btn_share_fb:   { ja: 'Facebookでシェア', en: 'Share on Facebook' },
   btn_share_copy: { ja: '📋 コピー', en: '📋 Copy' },
@@ -190,6 +192,8 @@ function applyI18n() {
   document.getElementById('btn-hint').textContent   = t('btn_hint');
   document.getElementById('btn-check').textContent  = t('btn_check');
   document.getElementById('btn-next').textContent   = t('btn_next');
+  document.getElementById('btn-start').textContent  = t('btn_start');
+  document.getElementById('btn-howto').textContent  = t('btn_howto');
   document.getElementById('btn-share-x').textContent   = t('btn_share_x');
   document.getElementById('btn-share-fb').textContent  = t('btn_share_fb');
   document.getElementById('btn-share-copy').textContent = t('btn_share_copy');
@@ -416,8 +420,11 @@ function loadDifficulty(difficulty) {
   setControlsLocked(done);
 
   if (!done) {
-    startTimer();
+    timerSecs = 0;
+    updateTimerDisplay();
+    document.getElementById('start-overlay').classList.remove('hidden');
   } else {
+    document.getElementById('start-overlay').classList.add('hidden');
     document.getElementById('timer').textContent = t('done_label');
   }
 }
@@ -772,13 +779,13 @@ function updateUndoButton() {
 
 function onCellClick(r, c) {
   if (isCompletedToday(currentMode, currentDifficulty)) return;
+  if (!timerInterval) return; // スタートボタンを押す前はブロック
   hintTargetCell = null;
 
   if (!game.toggle(r, c)) return;
 
   if (!puzzleStarted) {
     puzzleStarted = true;
-    gaEvent('puzzle_start', { mode: currentMode, difficulty: currentDifficulty });
   }
   updateUndoButton();
   renderGrid();
@@ -1034,6 +1041,12 @@ document.addEventListener('DOMContentLoaded', () => {
     howtoModal.classList.add('hidden');
     localStorage.setItem('howto_seen', String(howtoVersion));
   }
+
+  document.getElementById('btn-start').addEventListener('click', () => {
+    document.getElementById('start-overlay').classList.add('hidden');
+    startTimer();
+    gaEvent('puzzle_start', { mode: currentMode, difficulty: currentDifficulty });
+  });
 
   document.getElementById('btn-howto').addEventListener('click', () => {
     howtoModal.classList.remove('hidden');
