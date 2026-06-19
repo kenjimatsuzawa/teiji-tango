@@ -80,6 +80,7 @@ const I18N = {
   btn_hint:       { ja: '💡 ヒント', en: '💡 Hint' },
   btn_check:      { ja: '確認する', en: 'Check' },
   btn_next:       { ja: '次のパズルへ', en: 'Next Puzzle' },
+  btn_back:       { ja: 'ゲームに戻る', en: 'Back to Game' },
   btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
   btn_share_fb:   { ja: 'Facebookでシェア', en: 'Share on Facebook' },
   btn_share_copy: { ja: '📋 コピー', en: '📋 Copy' },
@@ -857,6 +858,8 @@ function showResult(won) {
     const text = game.buildShareText(puzzleDay, timerSecs, hintsUsed, currentTheme.sym1, currentTheme.sym2, getModeDisplayLabel(currentMode), getDiffDisplayLabel(currentDifficulty), LANG);
     shareText.textContent = text;
     document.getElementById('share-buttons').style.display = 'flex';
+    document.getElementById('btn-next').textContent = t('btn_next');
+    document.querySelector('.result-escape-link').style.display = '';
   } else {
     emoji.textContent = '😢';
     title.textContent = t('result_lose');
@@ -865,6 +868,8 @@ function showResult(won) {
     document.getElementById('result-achievements').innerHTML = '';
     shareText.textContent = '';
     document.getElementById('share-buttons').style.display = 'none';
+    document.getElementById('btn-next').textContent = t('btn_back');
+    document.querySelector('.result-escape-link').style.display = 'none';
   }
 
   modal.classList.remove('hidden');
