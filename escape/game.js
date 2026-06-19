@@ -207,11 +207,11 @@ function currentScore() { return Math.floor(elapsed) + beerScore; }
 // ─── Enemy types ─────────────────────────────────────────────
 // sizeMin/Max: 出現サイズ, sMult: 基本速度への倍率
 const ENEMY_TYPES = {
-  normal: { sizeMin: 15, sizeMax: 45, sMult: 1.0  },
-  fire:   { sizeMin: 36, sizeMax: 58, sMult: 1.65 }, // 大きい・速い
-  mail:   { sizeMin: 13, sizeMax: 26, sMult: 1.15 }, // 小さい・やや速い
-  doc:    { sizeMin: 30, sizeMax: 52, sMult: 0.58 }, // 大きい・遅い
-  beer:   { sizeMin: 18, sizeMax: 36, sMult: 0.9  },
+  normal: { sizeMin: 15, sizeMax: 45, sMult: 1.0,  hitMult: 1.0  },
+  fire:   { sizeMin: 36, sizeMax: 58, sMult: 1.65, hitMult: 0.65 }, // 炎は細長いので判定を小さめに
+  mail:   { sizeMin: 13, sizeMax: 26, sMult: 1.15, hitMult: 1.0  },
+  doc:    { sizeMin: 30, sizeMax: 52, sMult: 0.58, hitMult: 1.0  },
+  beer:   { sizeMin: 18, sizeMax: 36, sMult: 0.9,  hitMult: 1.0  },
 };
 // 出現確率: normal(親父) 65% / beer 10% / mail 12% / fire 7% / doc 6%
 function pickType() {
@@ -250,6 +250,7 @@ function spawnEnemy() {
     vy: Math.sin(angle) * speed,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
     type,
+    hitMult: props.hitMult,
   });
 }
 
@@ -322,8 +323,10 @@ function update(dt) {
       const dx = e.x - clampX, dy = e.y - clampY;
       collision = (dx * dx + dy * dy) < (e.w / 2) * (e.w / 2);
     } else {
-      collision = px < e.x + e.w/2 && px + ps > e.x - e.w/2 &&
-                  py < e.y + e.h/2 && py + ps > e.y - e.h/2;
+      const hw = e.w * e.hitMult / 2;
+      const hh = e.h * e.hitMult / 2;
+      collision = px < e.x + hw && px + ps > e.x - hw &&
+                  py < e.y + hh && py + ps > e.y - hh;
     }
     if (collision) {
       gameState = STATE.OVER;
