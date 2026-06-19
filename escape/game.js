@@ -41,6 +41,10 @@ function tDiff(i) { return (I18N.diffNames[LANG] ?? I18N.diffNames.ja)[i]; }
 
 const HOWTO_VERSION = 1;
 
+function gaEvent(name, params) {
+  if (typeof gtag === 'function') gtag('event', name, params || {});
+}
+
 const canvas        = document.getElementById('gameCanvas');
 const ctx           = canvas.getContext('2d');
 const W             = canvas.width;   // 600
@@ -192,6 +196,7 @@ function begin() {
   mouse.y      = H / 2;
   mouse.active = false;
   drag.active  = false;
+  gaEvent('escape_start', { difficulty });
   canvas.style.cursor = 'none'; // プレイ中はカーソル非表示
   btnHowto.style.display = 'none';
   if (rafId) cancelAnimationFrame(rafId);
@@ -332,6 +337,13 @@ function update(dt) {
       gameState = STATE.OVER;
       canvas.style.cursor = 'default';
       btnHowto.style.display = '';
+      gaEvent('escape_game_over', {
+        score: currentScore(),
+        elapsed_seconds: Math.floor(elapsed),
+        beer_score: beerScore,
+        difficulty,
+        is_new_high: isNewHigh,
+      });
       const finalScore = currentScore();
       if (finalScore > 0 && finalScore > highScore) {
         highScore = finalScore;
@@ -406,6 +418,7 @@ function shareScore(platform) {
   const text = LANG === 'en'
     ? `👔 Overtime confirmed...\n\nSurvived: ${elapsed.toFixed(1)}s  Score: ${score.toLocaleString()}\n${stars}\n\n#TeijiEscape\nteiji-tango.com/escape`
     : `👔 残業確定...\n\n生存: ${elapsed.toFixed(1)}秒　スコア: ${score.toLocaleString()}点\n${stars}\n\n#定時退社エスケープ\nteiji-tango.com/escape`;
+  gaEvent('escape_share', { method: platform, score: currentScore(), difficulty });
   if (platform === 'x') {
     window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text), '_blank');
   } else {
