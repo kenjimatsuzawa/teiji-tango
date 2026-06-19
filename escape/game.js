@@ -122,7 +122,8 @@ canvas.addEventListener('click', e => {
     (e.clientY - r.top)  * (H / r.height)
   );
 });
-canvas.addEventListener('touchstart', e => {
+document.addEventListener('touchstart', e => {
+  if (e.target.closest('.te-modal') || e.target.closest('.btn-howto')) return;
   e.preventDefault();
   const r  = canvas.getBoundingClientRect();
   const cx = (e.touches[0].clientX - r.left) * (W / r.width);
@@ -137,18 +138,16 @@ canvas.addEventListener('touchstart', e => {
     onPointer(cx, cy);
   }
 }, { passive: false });
-canvas.addEventListener('touchmove', e => {
+document.addEventListener('touchmove', e => {
+  if (e.target.closest('.te-modal-content')) return;
   e.preventDefault();
+  if (!drag.active) return;
   const r   = canvas.getBoundingClientRect();
   drag.curX = (e.touches[0].clientX - r.left) * (W / r.width);
   drag.curY = (e.touches[0].clientY - r.top)  * (H / r.height);
 }, { passive: false });
-canvas.addEventListener('touchend',    () => { drag.active = false; });
-canvas.addEventListener('touchcancel', () => { drag.active = false; });
-
-document.addEventListener('touchmove', e => {
-  if (!e.target.closest('.te-modal-content')) e.preventDefault();
-}, { passive: false });
+document.addEventListener('touchend',    () => { drag.active = false; });
+document.addEventListener('touchcancel', () => { drag.active = false; });
 
 document.addEventListener('keydown', e => {
   keys[e.key] = true;
