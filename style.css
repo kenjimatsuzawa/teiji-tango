@@ -470,15 +470,16 @@ h1 {
 .hint-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-.hint-tech-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--beer-color);
-  flex: 1;
+.hint-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .hint-penalty-badge {
@@ -505,7 +506,6 @@ h1 {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 4px;
 }
 
 .hint-reason-text {
