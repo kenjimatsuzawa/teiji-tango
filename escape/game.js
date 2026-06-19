@@ -152,7 +152,7 @@ document.addEventListener('keyup', e => { delete keys[e.key]; });
 function onPointer(x, y) {
   if (gameState === STATE.START) {
     if (hit(x, y, BTN_START)) { begin(); return; }
-    if (hit(x, y, BTN_TANGO_LINK)) { window.open('https://teiji-tango.com', '_blank'); return; }
+    if (hit(x, y, BTN_TANGO_LINK)) { window.location.href = '/'; return; }
     // 難易度の星をクリックした場合
     for (let i = 0; i < 5; i++) {
       const sx = W/2 - STAR_SPACING * 2 + i * STAR_SPACING;
@@ -167,7 +167,7 @@ function onPointer(x, y) {
     if (hit(x, y, BTN_RESTART))        begin();
     if (hit(x, y, BTN_SHARE_X))        shareScore('x');
     if (hit(x, y, BTN_SHARE_LINE))     shareScore('line');
-    if (hit(x, y, BTN_TANGO_LINK_OVER)) { window.open('https://teiji-tango.com', '_blank'); return; }
+    if (hit(x, y, BTN_TANGO_LINK_OVER)) { window.location.href = '/'; return; }
   }
 }
 function hit(x, y, b) {
