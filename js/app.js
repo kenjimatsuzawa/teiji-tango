@@ -82,7 +82,7 @@ const I18N = {
   btn_next:       { ja: '次のパズルへ', en: 'Next Puzzle' },
   btn_back:       { ja: 'ゲームに戻る', en: 'Back to Game' },
   btn_start:      { ja: '▶ スタート', en: '▶ Start' },
-  btn_howto:      { ja: '遊び方', en: 'How to Play' },
+  btn_howto:      { ja: '遊び方', en: 'How to<br>Play' },
   confirm_quit:   { ja: 'ゲームを終了しますか？', en: 'Quit this game?' },
   confirm_yes:    { ja: 'はい', en: 'Yes, quit' },
   btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
@@ -195,7 +195,7 @@ function applyI18n() {
   document.getElementById('btn-check').textContent  = t('btn_check');
   document.getElementById('btn-next').textContent   = t('btn_next');
   document.getElementById('btn-start').textContent      = t('btn_start');
-  document.getElementById('btn-howto').textContent      = t('btn_howto');
+  document.getElementById('btn-howto').innerHTML        = t('btn_howto');
   document.getElementById('confirm-title').textContent  = t('confirm_quit');
   document.getElementById('btn-confirm-yes').textContent  = t('confirm_yes');
   document.getElementById('btn-confirm-back').textContent = t('btn_back');

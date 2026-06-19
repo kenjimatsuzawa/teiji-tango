@@ -60,8 +60,9 @@ header {
   justify-self: start;
   width: auto;
   min-width: 64px;
-  height: 28px;
-  padding: 0 10px;
+  height: auto;
+  min-height: 28px;
+  padding: 4px 10px;
   border-radius: 14px;
   border: 1.5px solid var(--border);
   background: var(--surface);
@@ -77,6 +78,8 @@ header {
   flex-shrink: 0;
   white-space: nowrap;
   overflow: visible;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .btn-howto:active { opacity: 0.7; }
