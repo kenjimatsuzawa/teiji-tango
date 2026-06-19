@@ -186,10 +186,9 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(13, 13, 26, 0.72);
+  background: var(--bg);
   border-radius: 16px;
   z-index: 15;
-  backdrop-filter: blur(2px);
 }
 .start-overlay.hidden { display: none; }
 
