@@ -146,6 +146,10 @@ canvas.addEventListener('touchmove', e => {
 canvas.addEventListener('touchend',    () => { drag.active = false; });
 canvas.addEventListener('touchcancel', () => { drag.active = false; });
 
+document.addEventListener('touchmove', e => {
+  if (!e.target.closest('.te-modal-content')) e.preventDefault();
+}, { passive: false });
+
 document.addEventListener('keydown', e => {
   keys[e.key] = true;
   if (e.key === ' ') {

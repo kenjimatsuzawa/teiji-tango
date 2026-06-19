@@ -11,6 +11,13 @@ body {
   align-items: center;
   min-height: 100vh;
   font-family: 'Courier New', monospace;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  body {
+    align-items: flex-start;
+  }
 }
 
 #wrap {
