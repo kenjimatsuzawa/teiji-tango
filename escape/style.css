@@ -33,21 +33,27 @@ body {
   position: absolute;
   top: 8px;
   left: 8px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: auto;
+  min-width: 64px;
+  height: auto;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 14px;
   border: 1.5px solid #2a2a4a;
   background: rgba(26, 26, 46, 0.85);
   color: #a0a0b0;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'Courier New', monospace;
+  font-family: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
   -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  line-height: 1.2;
+  text-align: center;
 }
 .btn-howto:active { opacity: 0.7; }
 

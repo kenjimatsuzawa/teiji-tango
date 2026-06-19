@@ -16,6 +16,7 @@ const I18N = {
   restartHint: { ja: 'SPACE でも再スタート', en: 'SPACE to restart' },
   shareX:      { ja: '𝕏 でシェア', en: 'Share on 𝕏' },
   shareLine:   { ja: 'LINE でシェア', en: 'Share on LINE' },
+  btnHowto:    { ja: '遊び方', en: 'How to<br>Play' },
   howtoTitle:  { ja: '遊び方', en: 'How to Play' },
   howtoS1t:    { ja: 'ゲーム概要', en: 'Overview' },
   howtoS1:     { ja: '👔 シャツ（あなた）が定時退社を目指して逃げ続けるドッジゲーム。上司（ハゲ）・炎上案件・緊急メールなどを避けながら生存時間を伸ばそう！',
@@ -380,6 +381,7 @@ function drawBtn(b, label, col) {
 // ─── Howto modal ─────────────────────────────────────────────
 
 function applyI18n() {
+  document.getElementById('btn-howto').innerHTML       = t('btnHowto');
   if (LANG === 'ja') return;
   document.getElementById('howto-title').textContent   = t('howtoTitle');
   document.getElementById('howto-s1-title').textContent = t('howtoS1t');
