@@ -1,0 +1,157 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a2e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Courier New', monospace;
+}
+
+#wrap {
+  position: relative;
+  user-select: none;
+}
+
+#gameCanvas {
+  display: block;
+  border: 2px solid #2a2a4a;
+  cursor: default;
+  box-shadow: 0 0 40px rgba(74, 144, 217, 0.25);
+  /* モバイルでは画面幅に合わせて縮小 */
+  width: min(600px, 100vw);
+  height: min(600px, 100vw);
+}
+
+/* ─── ? ボタン ─── */
+.btn-howto {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #2a2a4a;
+  background: rgba(26, 26, 46, 0.85);
+  color: #a0a0b0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-howto:active { opacity: 0.7; }
+
+/* ─── モーダル ─── */
+.te-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  padding: 0 16px 16px;
+  backdrop-filter: blur(4px);
+}
+.te-modal.hidden { display: none; }
+
+.te-modal-content {
+  background: #16213e;
+  border-radius: 24px 24px 16px 16px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.5);
+  animation: teSlideUp 0.3s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+@keyframes teSlideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.te-howto-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.te-howto-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  background: linear-gradient(135deg, #4A90D9, #F5A623);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.te-modal-close {
+  background: none;
+  border: none;
+  color: #a0a0b0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  font-family: inherit;
+}
+
+.te-howto-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #2a2a4a;
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+}
+.te-howto-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.te-howto-section h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4A90D9;
+  margin-bottom: 8px;
+}
+.te-howto-section p {
+  font-size: 0.85rem;
+  color: #a0a0b0;
+  line-height: 1.6;
+}
+
+.te-enemy-list { display: flex; flex-direction: column; gap: 10px; }
+.te-enemy-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #a0a0b0;
+  line-height: 1.4;
+}
+.te-enemy-row span:first-child {
+  font-size: 1.3rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.te-enemy-row strong { color: #F5A623; }
+
+.te-note {
+  margin-top: 10px;
+  background: rgba(245, 166, 35, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  color: #a0a0b0;
+  line-height: 1.5;
+}
+.te-note strong { color: #F5A623; }

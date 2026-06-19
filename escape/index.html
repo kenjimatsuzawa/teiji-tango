@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定時退社エスケープ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="wrap">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <button id="btn-howto" class="btn-howto">?</button>
+  </div>
+
+  <!-- 遊び方モーダル -->
+  <div id="howto-modal" class="te-modal hidden">
+    <div class="te-modal-content">
+      <div class="te-howto-header">
+        <h2 id="howto-title">遊び方</h2>
+        <button id="btn-howto-close" class="te-modal-close">✕</button>
+      </div>
+
+      <section class="te-howto-section">
+        <h3 id="howto-s1-title">ゲーム概要</h3>
+        <p id="howto-s1-text">👔 シャツ（あなた）が定時退社を目指して逃げ続けるドッジゲーム。上司（ハゲ）・炎上案件・緊急メールなどを避けながら生存時間を伸ばそう！</p>
+      </section>
+
+      <section class="te-howto-section">
+        <h3 id="howto-s2-title">操作方法</h3>
+        <p id="howto-s2-text">マウス移動でシャツが追従します。スマホはドラッグ操作（指の動きに合わせてシャツが動く）。WASD・矢印キーでも動かせます。SPACEキーでスタート・リスタート。</p>
+      </section>
+
+      <section class="te-howto-section">
+        <h3 id="howto-s3-title">定時退社を阻む敵</h3>
+        <div class="te-enemy-list">
+          <div class="te-enemy-row"><span>👴</span><span id="enemy-normal">上司、、、いつも色んな方向から無茶苦茶言ってくる。</span></div>
+          <div class="te-enemy-row"><span>🔥</span><span id="enemy-fire">炎上案件 — 大きくて速い。要注意！</span></div>
+          <div class="te-enemy-row"><span>✉️</span><span id="enemy-mail">緊急メール — 小さくてやや速い</span></div>
+          <div class="te-enemy-row"><span>📄</span><span id="enemy-doc">大量書類 — 大きくて遅い</span></div>
+          <div class="te-enemy-row"><span>🍺</span><span id="enemy-beer">ビール — 触れると <strong>+10点</strong>！ 積極的に取ろう</span></div>
+        </div>
+      </section>
+
+      <section class="te-howto-section">
+        <h3 id="howto-s4-title">スコアとコツ</h3>
+        <p id="howto-s4-text">スコア = 生存秒数 + ビール取得点数。時間が経つほど敵が速く・多くなり、シャツも大きくなって避けにくくなる。端に追い詰められないよう、中央付近で動き続けよう！</p>
+        <div class="te-note" id="howto-note">
+          <strong>ヒント:</strong> ビールを狙いすぎて親父に突っ込まないように！
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

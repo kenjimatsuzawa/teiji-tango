@@ -1097,7 +1097,40 @@ h1 {
 .site-footer {
   text-align: center;
   padding: 12px 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
+
+.escape-link {
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: 20px;
+  background: rgba(74, 144, 217, 0.12);
+  border: 1px solid rgba(74, 144, 217, 0.35);
+  color: #4A90D9;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.escape-link:hover { background: rgba(74, 144, 217, 0.24); }
+
+.result-escape-link {
+  display: block;
+  margin-top: 14px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  text-align: center;
+  background: rgba(74, 144, 217, 0.15);
+  border: 1.5px solid rgba(74, 144, 217, 0.5);
+  color: #4A90D9;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.result-escape-link:active { opacity: 0.75; }
 
 .kofi-btn {
   display: inline-block;
