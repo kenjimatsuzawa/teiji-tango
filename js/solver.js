@@ -18,7 +18,8 @@
             if (grid[r][c] === EMPTY) {
               grid[r][c] = opp(v);
               steps.push({ r, c, value: opp(v), techId: 1, techName: '①バランス完了',
-                reason: `行${r+1}にすでに${sym(v)}が${size/2}個 → 残りは全て${sym(opp(v))}` });
+                reason:   `行${r+1}にすでに${sym(v)}が${size/2}個 → 残りは全て${sym(opp(v))}`,
+                reasonEn: `Row ${r+1} already has ${size/2} ${sym(v)} → all remaining cells are ${sym(opp(v))}` });
               used = true;
             }
           }
@@ -32,7 +33,8 @@
             if (grid[r][c] === EMPTY) {
               grid[r][c] = opp(v);
               steps.push({ r, c, value: opp(v), techId: 1, techName: '①バランス完了',
-                reason: `列${c+1}にすでに${sym(v)}が${size/2}個 → 残りは全て${sym(opp(v))}` });
+                reason:   `列${c+1}にすでに${sym(v)}が${size/2}個 → 残りは全て${sym(opp(v))}`,
+                reasonEn: `Col ${c+1} already has ${size/2} ${sym(v)} → all remaining cells are ${sym(opp(v))}` });
               used = true;
             }
           }
@@ -53,13 +55,15 @@
         if (i > 0 && !hw(r, i-1) && grid[r][i-1] === EMPTY) {
           grid[r][i-1] = opp(v);
           steps.push({ r, c: i-1, value: opp(v), techId: 2, techName: '②ダブルブロック',
-            reason: `行${r+1}の${i+1}・${i+2}列目に${sym(v)}が2連続 → 手前のマスは${sym(opp(v))}` });
+            reason:   `行${r+1}の${i+1}・${i+2}列目に${sym(v)}が2連続 → 手前のマスは${sym(opp(v))}`,
+            reasonEn: `Row ${r+1}: ${sym(v)}${sym(v)} in cols ${i+1}–${i+2} → cell before is ${sym(opp(v))}` });
           used = true;
         }
         if (i+2 < size && !hw(r, i+1) && grid[r][i+2] === EMPTY) {
           grid[r][i+2] = opp(v);
           steps.push({ r, c: i+2, value: opp(v), techId: 2, techName: '②ダブルブロック',
-            reason: `行${r+1}の${i+1}・${i+2}列目に${sym(v)}が2連続 → 次のマスは${sym(opp(v))}` });
+            reason:   `行${r+1}の${i+1}・${i+2}列目に${sym(v)}が2連続 → 次のマスは${sym(opp(v))}`,
+            reasonEn: `Row ${r+1}: ${sym(v)}${sym(v)} in cols ${i+1}–${i+2} → next cell is ${sym(opp(v))}` });
           used = true;
         }
       }
@@ -72,13 +76,15 @@
         if (i > 0 && !vw(i-1, c) && grid[i-1][c] === EMPTY) {
           grid[i-1][c] = opp(v);
           steps.push({ r: i-1, c, value: opp(v), techId: 2, techName: '②ダブルブロック',
-            reason: `列${c+1}の${i+1}・${i+2}行目に${sym(v)}が2連続 → 手前のマスは${sym(opp(v))}` });
+            reason:   `列${c+1}の${i+1}・${i+2}行目に${sym(v)}が2連続 → 手前のマスは${sym(opp(v))}`,
+            reasonEn: `Col ${c+1}: ${sym(v)}${sym(v)} in rows ${i+1}–${i+2} → cell above is ${sym(opp(v))}` });
           used = true;
         }
         if (i+2 < size && !vw(i+1, c) && grid[i+2][c] === EMPTY) {
           grid[i+2][c] = opp(v);
           steps.push({ r: i+2, c, value: opp(v), techId: 2, techName: '②ダブルブロック',
-            reason: `列${c+1}の${i+1}・${i+2}行目に${sym(v)}が2連続 → 次のマスは${sym(opp(v))}` });
+            reason:   `列${c+1}の${i+1}・${i+2}行目に${sym(v)}が2連続 → 次のマスは${sym(opp(v))}`,
+            reasonEn: `Col ${c+1}: ${sym(v)}${sym(v)} in rows ${i+1}–${i+2} → next cell is ${sym(opp(v))}` });
           used = true;
         }
       }
@@ -96,7 +102,8 @@
         if (v === EMPTY || grid[r][i+1] !== EMPTY || grid[r][i+2] !== v) continue;
         grid[r][i+1] = opp(v);
         steps.push({ r, c: i+1, value: opp(v), techId: 3, techName: '③サンドイッチ',
-          reason: `行${r+1}に${sym(v)}□${sym(v)}の挟み → 中間に${sym(v)}を入れると3連続違反` });
+          reason:   `行${r+1}に${sym(v)}□${sym(v)} → 3連続を防ぐため中間は${sym(opp(v))}`,
+          reasonEn: `Row ${r+1}: ${sym(v)}□${sym(v)} → middle must be ${sym(opp(v))} (no 3-in-a-row)` });
         used = true;
       }
     }
@@ -107,7 +114,8 @@
         if (v === EMPTY || grid[i+1][c] !== EMPTY || grid[i+2][c] !== v) continue;
         grid[i+1][c] = opp(v);
         steps.push({ r: i+1, c, value: opp(v), techId: 3, techName: '③サンドイッチ',
-          reason: `列${c+1}に${sym(v)}□${sym(v)}の挟み → 中間に${sym(v)}を入れると3連続違反` });
+          reason:   `列${c+1}に${sym(v)}□${sym(v)} → 3連続を防ぐため中間は${sym(opp(v))}`,
+          reasonEn: `Col ${c+1}: ${sym(v)}□${sym(v)} → middle must be ${sym(opp(v))} (no 3-in-a-row)` });
         used = true;
       }
     }
@@ -123,14 +131,16 @@
         const nv = con.type === 'eq' ? v1 : opp(v1);
         grid[con.r2][con.c2] = nv;
         steps.push({ r: con.r2, c: con.c2, value: nv, techId: 4, techName: '④制約直接',
-          reason: `(${con.r1+1}行${con.c1+1}列)が${sym(v1)} ${con.type==='eq'?'＝':'×'}制約 → このマスは${sym(nv)}` });
+          reason:   `行${con.r1+1}列${con.c1+1}が${sym(v1)}、${con.type==='eq'?'＝':'×'}なので、このマスは${sym(nv)}`,
+          reasonEn: `Row ${con.r1+1} col ${con.c1+1} is ${sym(v1)}, ${con.type==='eq'?'=':'×'} means this cell is ${con.type==='eq'?'also ':''}${sym(nv)}` });
         used = true;
       }
       if (v2 !== EMPTY && v1 === EMPTY) {
         const nv = con.type === 'eq' ? v2 : opp(v2);
         grid[con.r1][con.c1] = nv;
         steps.push({ r: con.r1, c: con.c1, value: nv, techId: 4, techName: '④制約直接',
-          reason: `(${con.r2+1}行${con.c2+1}列)が${sym(v2)} ${con.type==='eq'?'＝':'×'}制約 → このマスは${sym(nv)}` });
+          reason:   `行${con.r2+1}列${con.c2+1}が${sym(v2)}、${con.type==='eq'?'＝':'×'}なので、このマスは${sym(nv)}`,
+          reasonEn: `Row ${con.r2+1} col ${con.c2+1} is ${sym(v2)}, ${con.type==='eq'?'=':'×'} means this cell is ${con.type==='eq'?'also ':''}${sym(nv)}` });
         used = true;
       }
     }
@@ -148,14 +158,16 @@
         const v = row[0];
         row[5] = opp(v);
         steps.push({ r, c: 5, value: opp(v), techId: 5, techName: '⑤端点バランス',
-          reason: `行${r+1}の先頭2マスが${sym(v)}${sym(v)} → 末端が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反` });
+          reason:   `行${r+1}の先頭2マスが${sym(v)}${sym(v)} → 反対の端が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反`,
+          reasonEn: `Row ${r+1} starts ${sym(v)}${sym(v)} → opposite end must be ${sym(opp(v))} (else 3-in-a-row)` });
         used = true;
       }
       if (row[4] !== EMPTY && row[4] === row[5] && row[0] === EMPTY) {
         const v = row[5];
         row[0] = opp(v);
         steps.push({ r, c: 0, value: opp(v), techId: 5, techName: '⑤端点バランス',
-          reason: `行${r+1}の末尾2マスが${sym(v)}${sym(v)} → 先頭が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反` });
+          reason:   `行${r+1}の末尾2マスが${sym(v)}${sym(v)} → 反対の端が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反`,
+          reasonEn: `Row ${r+1} ends ${sym(v)}${sym(v)} → opposite end must be ${sym(opp(v))} (else 3-in-a-row)` });
         used = true;
       }
     }
@@ -164,14 +176,16 @@
         const v = grid[0][c];
         grid[5][c] = opp(v);
         steps.push({ r: 5, c, value: opp(v), techId: 5, techName: '⑤端点バランス',
-          reason: `列${c+1}の先頭2マスが${sym(v)}${sym(v)} → 末端が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反` });
+          reason:   `列${c+1}の先頭2マスが${sym(v)}${sym(v)} → 反対の端が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反`,
+          reasonEn: `Col ${c+1} starts ${sym(v)}${sym(v)} → opposite end must be ${sym(opp(v))} (else 3-in-a-row)` });
         used = true;
       }
       if (grid[4][c] !== EMPTY && grid[4][c] === grid[5][c] && grid[0][c] === EMPTY) {
         const v = grid[5][c];
         grid[0][c] = opp(v);
         steps.push({ r: 0, c, value: opp(v), techId: 5, techName: '⑤端点バランス',
-          reason: `列${c+1}の末尾2マスが${sym(v)}${sym(v)} → 先頭が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反` });
+          reason:   `列${c+1}の末尾2マスが${sym(v)}${sym(v)} → 反対の端が${sym(v)}だと中間3マスが${sym(opp(v))}で3連続違反`,
+          reasonEn: `Col ${c+1} ends ${sym(v)}${sym(v)} → opposite end must be ${sym(opp(v))} (else 3-in-a-row)` });
         used = true;
       }
     }
@@ -196,7 +210,8 @@
             for (const [r, c] of emptyCells) {
               grid[r][c] = opp(v);
               steps.push({ r, c, value: opp(v), techId: 6, techName: '⑥エリアバランス',
-                reason: `エリア${ri * 2 + ci + 1}に${sym(v)}が${size/2}個 → 残りは全て${sym(opp(v))}` });
+                reason:   `エリア${ri * 2 + ci + 1}に${sym(v)}が${size/2}個 → 残りは全て${sym(opp(v))}`,
+                reasonEn: `Region ${ri * 2 + ci + 1} has ${size/2} ${sym(v)} → remaining cells are ${sym(opp(v))}` });
               used = true;
             }
           }
@@ -225,14 +240,16 @@
         for (const [r, c] of emptyCells) {
           grid[r][c] = SHIRT;
           steps.push({ r, c, value: SHIRT, techId: 9, techName: '⑨枠バランス',
-            reason: `枠内の${sym(BEER)}が${cage.beerCount}個揃った → 残りは全て${sym(SHIRT)}` });
+            reason:   `枠内の${sym(BEER)}が${cage.beerCount}個揃った → 残りは全て${sym(SHIRT)}`,
+            reasonEn: `Cage has ${cage.beerCount} ${sym(BEER)} → remaining cells are ${sym(SHIRT)}` });
           used = true;
         }
       } else if (shirtNeeded === 0) {
         for (const [r, c] of emptyCells) {
           grid[r][c] = BEER;
           steps.push({ r, c, value: BEER, techId: 9, techName: '⑨枠バランス',
-            reason: `枠内の${sym(SHIRT)}が${cage.cells.length - cage.beerCount}個揃った → 残りは全て${sym(BEER)}` });
+            reason:   `枠内の${sym(SHIRT)}が${cage.cells.length - cage.beerCount}個揃った → 残りは全て${sym(BEER)}`,
+            reasonEn: `Cage has ${cage.cells.length - cage.beerCount} ${sym(SHIRT)} → remaining cells are ${sym(BEER)}` });
           used = true;
         }
       }
@@ -255,7 +272,8 @@
             if (grid[r][c] === EMPTY) {
               grid[r][c] = opp(v);
               steps.push({ r, c, value: opp(v), techId: 7, techName: '⑦対角バランス',
-                reason: `${name}に${sym(v)}が${size/2}個 → このマスは${sym(opp(v))}` });
+                reason:   `${name}に${sym(v)}が${size/2}個 → このマスは${sym(opp(v))}`,
+                reasonEn: `Diagonal has ${size/2} ${sym(v)} → this cell is ${sym(opp(v))}` });
               used = true;
             }
           }
@@ -283,7 +301,8 @@
           if (grid[rp][cp] === EMPTY) {
             grid[rp][cp] = opp(v);
             steps.push({ r: rp, c: cp, value: opp(v), techId: 8, techName: '⑧対角ブロック',
-              reason: `${name}に${sym(v)}が2連続 → 手前は${sym(opp(v))}` });
+              reason:   `${name}に${sym(v)}が2連続 → 手前は${sym(opp(v))}`,
+              reasonEn: `Diagonal: ${sym(v)}${sym(v)} → cell before is ${sym(opp(v))}` });
             used = true;
           }
         }
@@ -292,7 +311,8 @@
           if (grid[rn][cn] === EMPTY) {
             grid[rn][cn] = opp(v);
             steps.push({ r: rn, c: cn, value: opp(v), techId: 8, techName: '⑧対角ブロック',
-              reason: `${name}に${sym(v)}が2連続 → 次は${sym(opp(v))}` });
+              reason:   `${name}に${sym(v)}が2連続 → 次は${sym(opp(v))}`,
+              reasonEn: `Diagonal: ${sym(v)}${sym(v)} → next cell is ${sym(opp(v))}` });
             used = true;
           }
         }
@@ -304,7 +324,8 @@
         if (v === EMPTY || grid[r2][c2] !== EMPTY || grid[r3][c3] !== v) continue;
         grid[r2][c2] = opp(v);
         steps.push({ r: r2, c: c2, value: opp(v), techId: 8, techName: '⑧対角サンドイッチ',
-          reason: `${name}に${sym(v)}□${sym(v)}の挟み → 中間は${sym(opp(v))}` });
+          reason:   `${name}に${sym(v)}□${sym(v)}の挟み → 中間は${sym(opp(v))}`,
+          reasonEn: `Diagonal: ${sym(v)}□${sym(v)} → middle is ${sym(opp(v))}` });
         used = true;
       }
     }

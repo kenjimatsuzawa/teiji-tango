@@ -814,15 +814,16 @@ function showHintPanel(hint) {
   const SYM = { 1: currentTheme.sym1, 2: currentTheme.sym2 };
 
   if (hint) {
-    panel.querySelector('.hint-tech-name').textContent = hint.techName;
-    panel.querySelector('.hint-cell-label').textContent =
-      `行${hint.r + 1}・列${hint.c + 1} → ${SYM[hint.value]}`;
-    panel.querySelector('.hint-reason-text').textContent = hint.reason;
+    panel.querySelector('.hint-cell-label').textContent = LANG === 'ja'
+      ? `行${hint.r + 1}・列${hint.c + 1} → ${SYM[hint.value]}`
+      : `Row ${hint.r + 1} · Col ${hint.c + 1} → ${SYM[hint.value]}`;
+    panel.querySelector('.hint-reason-text').textContent = LANG === 'ja' ? hint.reason : hint.reasonEn;
     badge.style.display = 'inline';
   } else {
-    panel.querySelector('.hint-tech-name').textContent = '💡 ヒント';
-    panel.querySelector('.hint-cell-label').textContent = 'あと一息！';
-    panel.querySelector('.hint-reason-text').textContent = 'すでに全ての手筋は適用済みです。';
+    panel.querySelector('.hint-cell-label').textContent = LANG === 'ja' ? 'あと一息！' : 'Almost there!';
+    panel.querySelector('.hint-reason-text').textContent = LANG === 'ja'
+      ? 'すでに全ての手筋は適用済みです。'
+      : 'All logic steps have already been applied.';
     badge.style.display = 'none';
   }
 
