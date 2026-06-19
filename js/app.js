@@ -976,6 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-tentative-discard').addEventListener('click', () => discardTentative());
 
   document.getElementById('btn-hint').addEventListener('click', () => {
+    if (!timerInterval) return;
     const hint = game.getNextHint();
     if (!hint) {
       showHintPanel(null);
@@ -995,6 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-check').addEventListener('click', () => {
+    if (!timerInterval) return;
     if (!game.isFilled()) {
       showResult(false);
       return;
