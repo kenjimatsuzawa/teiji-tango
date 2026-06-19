@@ -58,6 +58,8 @@ header {
 /* ===== 遊び方ボタン ===== */
 .btn-howto {
   justify-self: start;
+  width: auto;
+  min-width: 64px;
   height: 28px;
   padding: 0 10px;
   border-radius: 14px;
@@ -74,6 +76,7 @@ header {
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
   white-space: nowrap;
+  overflow: visible;
 }
 
 .btn-howto:active { opacity: 0.7; }
