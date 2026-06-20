@@ -198,10 +198,14 @@ h1 {
   color: var(--text-sub);
   text-align: center;
   line-height: 1.5;
+  width: 100%;
+  max-width: 200px;
+  white-space: normal;
 }
 .start-overlay.hidden { display: none; }
 
 .btn-start {
+  flex-shrink: 0;
   padding: 14px 40px;
   border-radius: 12px;
   border: none;
