@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>定時退社キー / Teiji Key</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-inner">
+        <button id="howto-btn" class="btn-howto" data-i18n="howto_btn">遊び方</button>
+        <h1>🔑 定時退社キー</h1>
+        <button id="lang-btn" class="btn-lang">EN</button>
+      </div>
+      <p class="subtitle" data-i18n="subtitle">ブラック企業の出口暗証番号を解読して帰ろう</p>
+      <p class="legend">
+        <span class="s" data-i18n="legend_s">S = 数字・位置ともに正解</span> &nbsp;
+        <span class="b" data-i18n="legend_b">B = 数字は含まれるが位置が違う</span>
+      </p>
+    </header>
+
+    <section id="game-area">
+      <div id="input-display">
+        <div class="digit-box" id="d0">_</div>
+        <div class="digit-box" id="d1">_</div>
+        <div class="digit-box" id="d2">_</div>
+      </div>
+
+      <div id="action-row">
+        <button id="delete-btn" class="btn btn-secondary" data-i18n="btn_delete">⌫ 消す</button>
+        <button id="submit-btn" class="btn btn-primary" data-i18n="btn_submit">解読！</button>
+      </div>
+
+      <div id="numpad">
+        <button class="num-btn" data-num="0">0</button>
+        <button class="num-btn" data-num="1">1</button>
+        <button class="num-btn" data-num="2">2</button>
+        <button class="num-btn" data-num="3">3</button>
+        <button class="num-btn" data-num="4">4</button>
+        <button class="num-btn" data-num="5">5</button>
+        <button class="num-btn" data-num="6">6</button>
+        <button class="num-btn" data-num="7">7</button>
+        <button class="num-btn" data-num="8">8</button>
+        <button class="num-btn" data-num="9">9</button>
+      </div>
+
+      <!-- メモエリア -->
+      <section id="memo-area">
+        <div class="memo-header" data-i18n="memo_header">🗒️ メモ</div>
+
+        <div class="memo-sub-label">
+          <span data-i18n="memo_digit_label">数字の状態</span>
+          <span class="memo-hint-text" data-i18n="memo_digit_hint">タップ: 不明 → <span class="chip-out-eg">✕ない</span> → <span class="chip-in-eg">◯ある</span></span>
+        </div>
+        <div id="digit-chips"></div>
+
+        <div class="memo-sub-label" style="margin-top:14px">
+          <span data-i18n="memo_pos_label">位置メモ</span>
+          <span class="memo-hint-text" data-i18n="memo_pos_hint">タップで数字を設定</span>
+        </div>
+        <div id="pos-slots">
+          <div class="pos-slot" data-pos="0">
+            <div class="pos-label">①</div>
+            <div class="pos-value" id="pv0">?</div>
+          </div>
+          <div class="pos-slot" data-pos="1">
+            <div class="pos-label">②</div>
+            <div class="pos-value" id="pv1">?</div>
+          </div>
+          <div class="pos-slot" data-pos="2">
+            <div class="pos-label">③</div>
+            <div class="pos-value" id="pv2">?</div>
+          </div>
+        </div>
+      </section>
+
+      <div id="history"></div>
+    </section>
+
+    <footer class="key-footer">
+      <a href="/" class="key-footer-link" data-i18n="link_tango">🎵 定時退社タンゴ</a>
+      <a href="/escape/" class="key-footer-link" data-i18n="link_escape">🕹️ 定時退社エスケープ</a>
+    </footer>
+
+    <!-- 遊び方モーダル -->
+    <div id="howto-modal" class="modal hidden">
+      <div class="modal-content howto-content">
+        <button id="howto-close" class="modal-close-btn">×</button>
+        <div id="howto-body"></div>
+      </div>
+    </div>
+
+    <!-- 結果モーダル -->
+    <div id="win-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="modal-close-btn" class="modal-close-btn">×</button>
+        <div class="result-emoji">🎉</div>
+        <h2 data-i18n="win_title">脱出成功！</h2>
+        <p><span id="attempt-count">?</span><span data-i18n="win_msg">回で暗証番号を解読！</span></p>
+        <p class="secret-reveal"><span data-i18n="win_answer">答え:</span> <strong id="secret-display"></strong></p>
+        <button id="share-btn" class="btn-share" data-i18n="btn_share">𝕏 でシェア</button>
+      </div>
+    </div>
+
+    <!-- 位置メモ ピッカー -->
+    <div id="pos-picker" class="modal hidden">
+      <div class="modal-content picker-content">
+        <button id="picker-close" class="modal-close-btn">×</button>
+        <div class="picker-title" id="picker-title"></div>
+        <div id="picker-digits"></div>
+        <div class="picker-actions">
+          <button id="picker-toggle" class="btn btn-secondary" data-i18n="picker_possible">確定にする</button>
+          <button id="picker-clear" class="btn btn-secondary" data-i18n="picker_clear">クリア</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
