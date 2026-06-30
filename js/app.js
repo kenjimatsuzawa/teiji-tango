@@ -84,6 +84,7 @@ const I18N = {
   btn_start:      { ja: '▶ スタート', en: '▶ Start' },
   start_hint_tip: { ja: '💡 詰まったらヒントボタンで次の手がわかる（+5秒）', en: '💡 Stuck? Hint button shows your next move (+5 sec)' },
   btn_howto:      { ja: '遊び方', en: 'How to<br>Play' },
+  btn_tutorial:   { ja: '▶ インタラクティブチュートリアル', en: '▶ Interactive Tutorial' },
   confirm_quit:   { ja: 'ゲームを終了しますか？', en: 'Quit this game?' },
   confirm_yes:    { ja: 'はい', en: 'Yes, quit' },
   btn_share_x:    { ja: 'Xでシェア', en: 'Share on X' },
@@ -198,6 +199,7 @@ function applyI18n() {
   document.getElementById('btn-start').textContent      = t('btn_start');
   document.getElementById('start-hint-tip').textContent = t('start_hint_tip');
   document.getElementById('btn-howto').innerHTML        = t('btn_howto');
+  document.getElementById('btn-tutorial').textContent   = t('btn_tutorial');
   document.getElementById('confirm-title').textContent  = t('confirm_quit');
   document.getElementById('btn-confirm-yes').textContent  = t('confirm_yes');
   document.getElementById('btn-confirm-back').textContent = t('btn_back');
