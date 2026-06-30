@@ -123,7 +123,7 @@ canvas.addEventListener('click', e => {
   );
 });
 document.addEventListener('touchstart', e => {
-  if (e.target.closest('.te-modal') || e.target.closest('.btn-howto')) return;
+  if (e.target.closest('.te-modal') || e.target.closest('.btn-howto') || e.target.closest('.te-footer')) return;
   e.preventDefault();
   const r  = canvas.getBoundingClientRect();
   const cx = (e.touches[0].clientX - r.left) * (W / r.width);
