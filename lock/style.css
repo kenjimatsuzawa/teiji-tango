@@ -271,7 +271,7 @@ h1 {
 }
 
 .digit-chip {
-  width: 36px;
+  width: 100%;
   height: 36px;
   border: 1.5px solid var(--border);
   border-radius: 8px;
