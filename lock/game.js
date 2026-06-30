@@ -248,25 +248,50 @@ function deleteDigit() {
   refreshDisplay();
 }
 
+function getHint(strikes, balls) {
+  const l = LANG;
+  if (strikes === 3) return '';
+  if (strikes === 0 && balls === 0) {
+    return l === 'en'
+      ? 'None of these digits seem to be in the code...'
+      : 'これらの数字はどこにも含まれないようだ...';
+  }
+  const lines = [];
+  if (strikes > 0) {
+    lines.push(l === 'en'
+      ? `${strikes} digit${strikes > 1 ? 's' : ''} seem${strikes === 1 ? 's' : ''} to be in the right position...`
+      : `${strikes}つの数字の場所が正しいようだ...`);
+  }
+  if (balls > 0) {
+    lines.push(l === 'en'
+      ? `${balls} digit${balls > 1 ? 's' : ''} ${balls === 1 ? 'is' : 'are'} in the code, but in the wrong spot...`
+      : `${balls}つの数字が答えに含まれるようだ...ただ場所が違う`);
+  }
+  return lines.join('\n');
+}
+
+function closePopup() {
+  document.getElementById('result-popup').classList.add('hidden');
+}
+
 function showResultPopup(guess, result) {
-  const popup  = document.getElementById('result-popup');
-  const isWin  = result.strikes === 3;
+  const popup = document.getElementById('result-popup');
+  const isWin = result.strikes === 3;
 
   document.getElementById('popup-digits').textContent =
     guess.map(d => NUM_EMOJI[d]).join(' ');
 
   document.getElementById('popup-result').innerHTML = isWin
     ? `<span class="result-open">🔓 OPEN!</span>`
-    : `<span class="strike-num">${result.strikes}🏏</span> <span class="ball-num">${result.balls}⚾</span>`;
+    : `<span class="strike-num">${result.strikes}S</span>&nbsp;&nbsp;<span class="ball-num">${result.balls}B</span>`;
+
+  document.getElementById('popup-hint').textContent = getHint(result.strikes, result.balls);
 
   popup.classList.remove('hidden');
-  requestAnimationFrame(() => popup.classList.add('show'));
 
-  const duration = isWin ? 1400 : 1100;
-  setTimeout(() => {
-    popup.classList.remove('show');
-    setTimeout(() => popup.classList.add('hidden'), 200);
-  }, duration);
+  if (isWin) {
+    setTimeout(closePopup, 1400);
+  }
 }
 
 function submit() {
@@ -329,8 +354,10 @@ document.addEventListener('keydown', e => {
 submitBtn.addEventListener('click', submit);
 deleteBtn.addEventListener('click', deleteDigit);
 document.querySelectorAll('.num-btn').forEach(btn => {
-  btn.addEventListener('click', () => inputDigit(parseInt(btn.dataset.num)));
+  btn.addEventListener('click', () => { closePopup(); inputDigit(parseInt(btn.dataset.num)); });
 });
+
+document.getElementById('result-popup').addEventListener('click', closePopup);
 
 // ===== 数字チップ（メモ） =====
 const chipContainer = document.getElementById('digit-chips');

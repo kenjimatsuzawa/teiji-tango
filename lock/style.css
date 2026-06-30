@@ -656,40 +656,59 @@ h1 {
 /* ===== 結果ポップアップ ===== */
 .result-popup {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.6);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  cursor: pointer;
+  animation: popup-fadein 0.18s ease;
+}
+.result-popup.hidden { display: none; }
+
+@keyframes popup-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.popup-box {
   background: var(--surface);
   border: 2px solid var(--shirt-color);
   border-radius: 20px;
-  padding: 20px 40px;
+  padding: 32px 48px;
   text-align: center;
-  z-index: 300;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s, transform 0.18s;
-}
-.result-popup.hidden { display: none; }
-.result-popup.show {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  min-width: 300px;
   animation: popup-bounce 0.28s ease;
 }
+
 @keyframes popup-bounce {
-  0%   { transform: translate(-50%, -50%) scale(0.6); }
-  65%  { transform: translate(-50%, -50%) scale(1.08); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+  0%   { transform: scale(0.6); }
+  65%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
+
 .popup-digits {
-  font-size: 2rem;
-  letter-spacing: 0.15em;
-  margin-bottom: 6px;
-}
-.popup-result {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.2rem;
   letter-spacing: 0.1em;
+  white-space: nowrap;
+  margin-bottom: 10px;
 }
-.popup-result .strike-num { font-size: 2rem; }
-.popup-result .ball-num   { font-size: 2rem; }
-.popup-result .result-open { font-size: 2rem; }
+
+.popup-result {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+}
+.popup-result .strike-num { font-size: 2.2rem; color: var(--success); }
+.popup-result .ball-num   { font-size: 2.2rem; color: var(--beer-color); }
+.popup-result .result-open { font-size: 2.2rem; color: var(--beer-color); }
+
+.popup-hint {
+  font-size: 0.9rem;
+  color: var(--text-sub);
+  font-style: italic;
+  line-height: 1.6;
+  white-space: pre-line;
+}
