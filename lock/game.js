@@ -1,7 +1,12 @@
 'use strict';
 
 function getRandomCode() {
-  return Array.from({ length: 3 }, () => Math.floor(Math.random() * 10));
+  const digits = [];
+  while (digits.length < 3) {
+    const d = Math.floor(Math.random() * 10);
+    if (!digits.includes(d)) digits.push(d);
+  }
+  return digits;
 }
 
 // Strike / Ball 判定（重複あり対応）
@@ -89,12 +94,12 @@ const HOWTO_HTML = {
 </div>
 <div class="howto-section">
   <h3>🎮 基本ルール</h3>
-  <p>3桁の数字（0〜9、同じ数字の重複あり）を入力して「解読！」を押すと、ヒントが表示されます。</p>
+  <p>3桁の数字（0〜9、各桁は全て異なる）を入力して「解読！」を押すと、ヒントが表示されます。</p>
   <ul class="howto-list">
     <li>① 〜 ③ の3桁の数字を当てるゲームです</li>
     <li>数字だけでなく、<strong>位置まで正確に</strong>当てる必要があります</li>
     <li>入力後のヒント: 位置も含めて正解なら <span class="s">S（ストライク）</span>、数字は含まれるが位置が違えば <span class="b">B（ボール）</span></li>
-    <li>⚠️ 同じ数字が複数の桁に入ることもあります</li>
+    <li>3桁の数字は全て異なります（同じ数字は使われません）</li>
   </ul>
   <div class="howto-example">
     <div class="ex-answer">正解: <strong>3 &nbsp;5 &nbsp;9</strong> の場合</div>
@@ -131,12 +136,12 @@ const HOWTO_HTML = {
 </div>
 <div class="howto-section">
   <h3>🎮 Basic Rules</h3>
-  <p>Enter a 3-digit number (0–9, repeats allowed) and press "Decode!" to get a hint.</p>
+  <p>Enter a 3-digit number (0–9, all digits unique) and press "Decode!" to get a hint.</p>
   <ul class="howto-list">
     <li>Guess the correct 3-digit code for positions ①②③</li>
     <li>Both the <strong>digit AND its position</strong> must be correct</li>
     <li>After each guess: <span class="s">S (Strike)</span> = right digit, right position; <span class="b">B (Ball)</span> = right digit, wrong position</li>
-    <li>⚠️ The same digit can appear in multiple positions</li>
+    <li>All 3 digits are different — no repeats in the code</li>
   </ul>
   <div class="howto-example">
     <div class="ex-answer">Example: Answer is <strong>3 &nbsp;5 &nbsp;9</strong></div>
