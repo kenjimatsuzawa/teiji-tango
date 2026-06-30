@@ -1210,3 +1210,181 @@ h1 {
 .kofi-btn:hover {
   background: rgba(255, 94, 58, 0.22);
 }
+
+/* ===== チュートリアル ===== */
+.btn-tutorial-start {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 0 0 16px;
+  background: linear-gradient(135deg, var(--shirt-color), #2980b9);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-tutorial-start:hover { opacity: 0.88; }
+
+.tut-modal-content {
+  text-align: left;
+  padding: 16px 20px 24px !important;
+}
+
+.tut-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tut-progress-track {
+  flex: 1;
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.tut-progress-fill {
+  height: 100%;
+  background: var(--shirt-color);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.tut-step-count {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.tut-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--shirt-color);
+  margin-bottom: 8px;
+}
+
+.tut-reason {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin-bottom: 14px;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--shirt-color);
+}
+
+#tut-grid {
+  margin-bottom: 12px;
+}
+
+.tut-grid-inner {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  width: 100%;
+  position: relative;
+}
+
+.tut-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.9rem, 4vw, 1.4rem);
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tut-cell.shirt {
+  background: rgba(74, 144, 217, 0.15);
+  border-color: var(--shirt-color);
+}
+
+.tut-cell.beer {
+  background: rgba(245, 166, 35, 0.15);
+  border-color: var(--beer-color);
+}
+
+.tut-cell.fixed.shirt {
+  background: rgba(74, 144, 217, 0.5);
+  border-color: var(--shirt-color);
+}
+
+.tut-cell.fixed.beer {
+  background: rgba(245, 166, 35, 0.5);
+  border-color: var(--beer-color);
+}
+
+.tut-cell.target {
+  border-color: var(--success);
+  cursor: pointer;
+  animation: tut-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes tut-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+  50%       { box-shadow: 0 0 0 5px rgba(46, 204, 113, 0); }
+}
+
+.tut-cell.tut-filled {
+  animation: tut-pop 0.3s ease;
+}
+
+@keyframes tut-pop {
+  0%   { transform: scale(0.8); }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.tut-con {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 0.6rem;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+.tut-con.eq  { background: #2ecc71; color: #fff; font-size: 0.5rem; }
+.tut-con.neq { background: #e74c3c; color: #fff; font-size: 0.65rem; }
+
+.tut-instruction {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  text-align: center;
+  margin-bottom: 16px;
+  min-height: 1.4em;
+  transition: color 0.2s;
+}
+
+.tut-instruction.success {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.tut-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.tut-nav .btn {
+  flex: 1;
+  font-size: 0.9rem;
+}

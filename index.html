@@ -166,6 +166,8 @@
             <button id="btn-howto-close" class="modal-close">×</button>
           </div>
 
+          <button id="btn-tutorial" class="btn-tutorial-start">▶ インタラクティブチュートリアル</button>
+
           <div class="howto-section">
             <h3>🎯 目標</h3>
             <p>👔（出社）と 🍺（退社）を使って、全てのマスを3つのルールに従って埋めよう！</p>
@@ -369,6 +371,27 @@
     </footer>
   </div>
 
+  <!-- チュートリアルモーダル -->
+  <div id="tutorial-modal" class="modal hidden">
+    <div class="modal-content tut-modal-content">
+      <div class="tut-topbar">
+        <div class="tut-progress-track">
+          <div class="tut-progress-fill" id="tut-progress"></div>
+        </div>
+        <span class="tut-step-count" id="tut-step-count">1 / 5</span>
+        <button id="tut-close" class="modal-close">×</button>
+      </div>
+      <h3 class="tut-title" id="tut-title"></h3>
+      <p class="tut-reason" id="tut-reason"></p>
+      <div id="tut-grid"></div>
+      <p class="tut-instruction" id="tut-instruction"></p>
+      <div class="tut-nav">
+        <button id="tut-prev" class="btn btn-secondary">← 戻る</button>
+        <button id="tut-next" class="btn btn-primary">次へ →</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/puzzles.js"></script>
   <script src="js/wall-puzzles.js"></script>
   <script src="js/region-puzzles.js"></script>
@@ -377,6 +400,7 @@
   <script src="js/solver.js"></script>
   <script src="js/game.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/tutorial.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
