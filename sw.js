@@ -1,4 +1,4 @@
-const CACHE = 'teiji-tango-v42';
+const CACHE = 'teiji-tango-v43';
 const ASSETS = [
   '/',
   '/index.html',
@@ -8,6 +8,7 @@ const ASSETS = [
   '/js/solver.js',
   '/js/game.js',
   '/js/app.js',
+  '/js/tutorial.js',
   '/icons/icon.svg',
 ];
 
