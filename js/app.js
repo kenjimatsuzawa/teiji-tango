@@ -92,6 +92,7 @@ const I18N = {
   btn_share_copy: { ja: '📋 コピー', en: '📋 Copy' },
   kofi_label:     { ja: '気に入ったら支援してね', en: 'Support on Ko-fi' },
   escape_link:    { ja: '🕹️ 定時退社エスケープも遊ぶ', en: '🕹️ Play Teiji-Escape' },
+  lock_link:      { ja: '🔒 定時退社ロック · Teiji Lock', en: '🔒 Teiji Lock' },
   btn_copied:     { ja: '✅ コピーしました！', en: '✅ Copied!' },
   hint_penalty:   { ja: '+5秒', en: '+5 sec' },
   hint_default:   { ja: '💡 ヒント', en: '💡 Hint' },
@@ -207,8 +208,12 @@ function applyI18n() {
   document.getElementById('btn-share-fb').textContent  = t('btn_share_fb');
   document.getElementById('btn-share-copy').textContent = t('btn_share_copy');
   document.getElementById('kofi-label').textContent     = t('kofi_label');
-  document.querySelector('.escape-link').textContent        = t('escape_link');
-  document.querySelector('.result-escape-link').textContent = t('escape_link');
+  const escLinks = document.querySelectorAll('.escape-link');
+  if (escLinks[0]) escLinks[0].textContent = t('escape_link');
+  if (escLinks[1]) escLinks[1].textContent = t('lock_link');
+  const resultLinks = document.querySelectorAll('.result-escape-link');
+  if (resultLinks[0]) resultLinks[0].textContent = t('escape_link');
+  if (resultLinks[1]) resultLinks[1].textContent = t('lock_link');
 
   document.querySelector('#howto-modal h2').textContent = t('howto_title');
   document.querySelector('#ach-modal h2').textContent   = t('ach_title');

@@ -46,9 +46,9 @@ const TRANSLATIONS = {
     picker_confirmed: '✓ 確定済み',
     picker_clear:     'クリア',
     picker_pos_title: pos => `位置${['①','②','③'][pos]}の候補`,
-    share_title:      '🔑 定時退社キー',
+    share_title:      '🔒 定時退社ロック',
     share_count:      n => `${n}回で脱出！`,
-    share_url:        'teiji-tango.com/key/',
+    share_url:        'teiji-tango.com/lock/',
     link_tango:       '🎵 定時退社タンゴ',
     link_escape:      '🕹️ 定時退社エスケープ',
   },
@@ -72,9 +72,9 @@ const TRANSLATIONS = {
     picker_confirmed: '✓ Confirmed',
     picker_clear:     'Clear',
     picker_pos_title: pos => `Position ${['①','②','③'][pos]} candidates`,
-    share_title:      '🔑 Teiji Key',
+    share_title:      '🔒 Teiji Lock',
     share_count:      n => `Escaped in ${n} ${n === 1 ? 'try' : 'tries'}!`,
-    share_url:        'teiji-tango.com/key/',
+    share_url:        'teiji-tango.com/lock/',
     link_tango:       '🎵 Teiji Tango',
     link_escape:      '🕹️ Teiji Escape',
   },
@@ -82,7 +82,7 @@ const TRANSLATIONS = {
 
 const HOWTO_HTML = {
   ja: `
-<div class="howto-header"><h2>🔑 定時退社キーの遊び方</h2></div>
+<div class="howto-header"><h2>🔒 定時退社ロックの遊び方</h2></div>
 <div class="howto-section">
   <h3>📖 ストーリー</h3>
   <p>仕事を終えたが、帰るためにはブラック企業の出口暗証番号を解読しなければならない、、、<br>毎日変わる3桁のコードを当てて、定時に帰ろう！</p>
@@ -124,7 +124,7 @@ const HOWTO_HTML = {
   「確定にする」を押すと1つに絞って確定（緑）表示。</p>
 </div>`,
   en: `
-<div class="howto-header"><h2>🔑 How to Play Teiji Key</h2></div>
+<div class="howto-header"><h2>🔒 How to Play Teiji Lock</h2></div>
 <div class="howto-section">
   <h3>📖 Story</h3>
   <p>You've finally wrapped up work for the day — time to head home!<br>But this black company has a daily exit passcode that changes every day. Crack the 3-digit code to make your escape!</p>
