@@ -219,7 +219,7 @@ function addRow(guess, result) {
   row.className = 'history-row';
   let resultHtml;
   if (strikes === 3) {
-    resultHtml = `<span class="result-open">🔑 OPEN!</span>`;
+    resultHtml = `<span class="result-open">🔓 OPEN!</span>`;
   } else {
     resultHtml = `<span class="strike-num">${strikes}S</span> <span class="ball-num">${balls}B</span>`;
   }
@@ -248,19 +248,41 @@ function deleteDigit() {
   refreshDisplay();
 }
 
+function showResultPopup(guess, result) {
+  const popup  = document.getElementById('result-popup');
+  const isWin  = result.strikes === 3;
+
+  document.getElementById('popup-digits').textContent =
+    guess.map(d => NUM_EMOJI[d]).join(' ');
+
+  document.getElementById('popup-result').innerHTML = isWin
+    ? `<span class="result-open">🔓 OPEN!</span>`
+    : `<span class="strike-num">${result.strikes}🏏</span> <span class="ball-num">${result.balls}⚾</span>`;
+
+  popup.classList.remove('hidden');
+  requestAnimationFrame(() => popup.classList.add('show'));
+
+  const duration = isWin ? 1400 : 1100;
+  setTimeout(() => {
+    popup.classList.remove('show');
+    setTimeout(() => popup.classList.add('hidden'), 200);
+  }, duration);
+}
+
 function submit() {
   if (won || current.length !== 3) return;
   const guess  = [...current];
   const result = evaluate(SECRET, guess);
   history.push({ guess, result });
   addRow(guess, result);
+  showResultPopup(guess, result);
   current = [];
   refreshDisplay();
   if (result.strikes === 3) {
     won = true;
     submitBtn.disabled = true;
     deleteBtn.disabled = true;
-    setTimeout(showWin, 700);
+    setTimeout(showWin, 1600);
   }
 }
 

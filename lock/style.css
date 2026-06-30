@@ -652,3 +652,44 @@ h1 {
   border-color: var(--success) !important;
   color: var(--success) !important;
 }
+
+/* ===== 結果ポップアップ ===== */
+.result-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.6);
+  background: var(--surface);
+  border: 2px solid var(--shirt-color);
+  border-radius: 20px;
+  padding: 20px 40px;
+  text-align: center;
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.result-popup.hidden { display: none; }
+.result-popup.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: popup-bounce 0.28s ease;
+}
+@keyframes popup-bounce {
+  0%   { transform: translate(-50%, -50%) scale(0.6); }
+  65%  { transform: translate(-50%, -50%) scale(1.08); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+.popup-digits {
+  font-size: 2rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.popup-result {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.popup-result .strike-num { font-size: 2rem; }
+.popup-result .ball-num   { font-size: 2rem; }
+.popup-result .result-open { font-size: 2rem; }
