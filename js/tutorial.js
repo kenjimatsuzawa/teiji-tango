@@ -15,7 +15,7 @@
   let busy = false;
 
   function lang() {
-    return document.documentElement.lang === 'en' ? 'en' : 'ja';
+    return (typeof LANG !== 'undefined' ? LANG : 'ja');
   }
 
   function init() {
@@ -131,7 +131,6 @@
 
     document.getElementById('tut-progress').style.width = `${(idx / total) * 100}%`;
     document.getElementById('tut-step-count').textContent = `${idx + 1} / ${total}`;
-    document.getElementById('tut-title').textContent = TECH_NAMES[l][step.techId] || step.techName;
     document.getElementById('tut-reason').textContent = l === 'en' ? step.reasonEn : step.reason;
 
     const instr = document.getElementById('tut-instruction');
