@@ -263,16 +263,18 @@ function getHint(strikes, balls) {
   }
   const lines = [];
   if (strikes > 0) {
-    lines.push(l === 'en'
+    const msg = l === 'en'
       ? `${strikes} digit${strikes > 1 ? 's' : ''} seem${strikes === 1 ? 's' : ''} to be in the right position...`
-      : `${strikes}つの数字の場所が正しいようだ...`);
+      : `${strikes}つの数字の場所が正しいようだ...`;
+    lines.push(`<span class="strike-num">${strikes}S</span>…${msg}`);
   }
   if (balls > 0) {
-    lines.push(l === 'en'
+    const msg = l === 'en'
       ? `${balls} digit${balls > 1 ? 's' : ''} ${balls === 1 ? 'is' : 'are'} in the code, but in the wrong spot...`
-      : `${balls}つの数字が答えに含まれるようだ...ただ場所が違う`);
+      : `${balls}つの数字が答えに含まれるようだ...ただ場所が違う`;
+    lines.push(`<span class="ball-num">${balls}B</span>…${msg}`);
   }
-  return lines.join('\n');
+  return lines.join('<br>');
 }
 
 function closePopup() {
@@ -290,7 +292,7 @@ function showResultPopup(guess, result) {
     ? `<span class="result-open">🔓 OPEN!</span>`
     : `<span class="strike-num">${result.strikes}S</span>&nbsp;&nbsp;<span class="ball-num">${result.balls}B</span>`;
 
-  document.getElementById('popup-hint').textContent = getHint(result.strikes, result.balls);
+  document.getElementById('popup-hint').innerHTML = getHint(result.strikes, result.balls);
 
   popup.classList.remove('hidden');
 
