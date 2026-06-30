@@ -363,6 +363,7 @@ document.querySelectorAll('.num-btn').forEach(btn => {
 });
 
 document.getElementById('result-popup').addEventListener('click', closePopup);
+document.getElementById('popup-close').addEventListener('click', e => { e.stopPropagation(); closePopup(); });
 
 // ===== 数字チップ（メモ） =====
 const chipContainer = document.getElementById('digit-chips');
