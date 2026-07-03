@@ -241,10 +241,18 @@ function tryGeneratePuzzle(diff, id) {
 
 // ─── メイン ───────────────────────────────────────────────────
 
+// CLI: --count N（難易度ごとの生成数、既定30） --start-id X（開始ID、既定1001）
+//      --json（パズル配列のJSONのみ出力。既存ファイルへの追記用）
+const argv = process.argv.slice(2);
+function argNum(name, def) {
+  const i = argv.indexOf(name);
+  return i >= 0 ? Number(argv[i + 1]) : def;
+}
 const DIFFS = ['初級', '中級', '上級'];
-const COUNT = 30;
+const COUNT = argNum('--count', 30);
+const JSON_ONLY = argv.includes('--json');
 const puzzles = [];
-let id = 1001;
+let id = argNum('--start-id', 1001);
 
 for (const diff of DIFFS) {
   let generated = 0;
@@ -262,17 +270,20 @@ for (const diff of DIFFS) {
   process.stderr.write(`${diff}: ${generated}/${COUNT} 完了\n`);
 }
 
-const lines = [
-  "'use strict';",
-  "// 壁ありパズル (自動生成)",
-  `// 生成日: ${new Date().toISOString().slice(0,10)}`,
-  "const WALL_PUZZLES = " + JSON.stringify(puzzles, null, 2) + ";",
-  "",
-  "function getWallPuzzleByDifficulty(difficulty) {",
-  "  const day = Math.floor((new Date() - new Date('2025-01-01')) / 86400000);",
-  "  const pool = WALL_PUZZLES.filter(p => p.difficulty === difficulty);",
-  "  return pool[day % pool.length];",
-  "}",
-];
-
-process.stdout.write(lines.join('\n') + '\n');
+if (JSON_ONLY) {
+  process.stdout.write(JSON.stringify(puzzles, null, 2) + '\n');
+} else {
+  const lines = [
+    "'use strict';",
+    "// 壁ありパズル (自動生成)",
+    `// 生成日: ${new Date().toISOString().slice(0,10)}`,
+    "const WALL_PUZZLES = " + JSON.stringify(puzzles, null, 2) + ";",
+    "",
+    "function getWallPuzzleByDifficulty(difficulty) {",
+    "  const day = getDayIndex(); // 共通ロジック（puzzles.js で定義、JST16:00リセット）",
+    "  const pool = WALL_PUZZLES.filter(p => p.difficulty === difficulty);",
+    "  return pool[day % pool.length];",
+    "}",
+  ];
+  process.stdout.write(lines.join('\n') + '\n');
+}
