@@ -59,7 +59,7 @@ const TRANSLATIONS = {
   },
   en: {
     howto_btn:        'How to Play',
-    subtitle:         'Crack the daily exit code and escape the black company',
+    subtitle:         'Crack the exit code and escape the black company',
     legend_s:         'S = right digit & position',
     legend_b:         'B = right digit, wrong position',
     btn_delete:       '⌫ Del',
@@ -90,7 +90,7 @@ const HOWTO_HTML = {
 <div class="howto-header"><h2>🔒 定時退社ロックの遊び方</h2></div>
 <div class="howto-section">
   <h3>📖 ストーリー</h3>
-  <p>仕事を終えたが、帰るためにはブラック企業の出口暗証番号を解読しなければならない、、、<br>毎日変わる3桁のコードを当てて、定時に帰ろう！</p>
+  <p>仕事を終えたが、帰るためにはブラック企業の出口暗証番号を解読しなければならない、、、<br>3桁のコードを解読して、定時に帰ろう！</p>
 </div>
 <div class="howto-section">
   <h3>🎮 基本ルール</h3>
@@ -132,7 +132,7 @@ const HOWTO_HTML = {
 <div class="howto-header"><h2>🔒 How to Play Teiji Lock</h2></div>
 <div class="howto-section">
   <h3>📖 Story</h3>
-  <p>You've finally wrapped up work for the day — time to head home!<br>But this black company has a daily exit passcode that changes every day. Crack the 3-digit code to make your escape!</p>
+  <p>You've finally wrapped up work for the day — time to head home!<br>But this black company locks its exit with a secret passcode. Crack the 3-digit code to make your escape!</p>
 </div>
 <div class="howto-section">
   <h3>🎮 Basic Rules</h3>
