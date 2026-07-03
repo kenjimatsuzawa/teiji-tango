@@ -2,6 +2,13 @@
 node_modules/
 coverage/
 
+# ローカル専用資料（マーケ素材・動画・下書き。公開リポジトリに載せない）
+docs/local/
+
+# 生成物・OSゴミ
+scripts/daily-post.png
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

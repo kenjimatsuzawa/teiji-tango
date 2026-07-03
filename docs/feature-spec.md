@@ -1,7 +1,7 @@
 # 定時退社タンゴ 機能仕様書
 
 > 作成日: 2026-05-05  
-> バージョン: v1.0（公開前）
+> 最終更新: 2026-07-03（本書はタンゴ専用に整理。エスケープは `escape-spec.md`、ロックは `lock-spec.md`、リポジトリ全体は ルートの `CLAUDE.md` を参照）
 
 ---
 
@@ -99,8 +99,8 @@
 **ルール**: 行列バランス（3:3）＋ 3連続NG ＋ 制約マーカー
 
 ### 3-2. 壁ありモード（🧱）
-**パズルファイル**: `js/wall-puzzles.js`（90問）  
-**生成スクリプト**: `scripts/generate-wall-puzzles.js`
+**パズルファイル**: `js/wall-puzzles.js`（192問 = 各難易度64問。初回90問 + 2026-07-03 追加102問）  
+**生成スクリプト**: `scripts/generate-wall-puzzles.js`（`--count N --start-id X --json` で追加生成に対応。`--json` で配列のみ出力し既存ファイルへ追記マージする）
 
 **追加ルール**: セル間に壁（`|` または `—`）が置かれ、壁をまたぐと3連続ルールが分断される
 
@@ -338,34 +338,46 @@ teiji-tango/
 ├── index.html               # エントリーポイント
 ├── style.css                # 全スタイル
 ├── manifest.json            # PWAマニフェスト
-├── sw.js                    # Service Worker
+├── sw.js                    # Service Worker（変更時はCACHEバージョンをバンプ）
+├── CNAME / robots.txt / sitemap.xml  # GitHub Pages・SEO
 ├── js/
-│   ├── puzzles.js           # 通常モードパズル + getPuzzleByDifficulty()
-│   ├── wall-puzzles.js      # 壁ありパズル90問 + getWallPuzzleByDifficulty()
+│   ├── puzzles.js           # 通常モードパズル + getDayIndex() + getPuzzleByDifficulty()
+│   ├── wall-puzzles.js      # 壁ありパズル192問 + getWallPuzzleByDifficulty()
 │   ├── region-puzzles.js    # エリアパズル90問 + getRegionPuzzleByDifficulty()
 │   ├── x-puzzles.js         # Xタンゴパズル90問 + getXPuzzleByDifficulty()
 │   ├── killer-puzzles.js    # キラータンゴパズル90問 + getKillerPuzzleByDifficulty()
 │   ├── solver.js            # 手筋ソルバー（ヒント用）TangoSolver
 │   ├── game.js              # ゲームロジック TangoGame
-│   └── app.js               # UI・イベント・状態管理
+│   ├── tutorial.js          # インタラクティブチュートリアル（§15）
+│   └── app.js               # UI・イベント・状態管理・フィーチャーフラグ・i18n
+├── escape/                  # 定時退社エスケープ（デプロイコピー → escape-spec.md）
+├── lock/                    # 定時退社ロック（デプロイコピー → lock-spec.md）
 ├── icons/
 │   ├── icon.svg             # アプリアイコン
 │   └── ogp.png              # OGP画像（1200×630px）
 ├── scripts/
+│   ├── generate-puzzles.js         # 通常パズル生成
 │   ├── generate-wall-puzzles.js    # 壁ありパズル生成
 │   ├── generate-region-puzzles.js  # エリアパズル生成
 │   ├── generate-x-puzzles.js       # Xタンゴパズル生成
 │   ├── generate-killer-puzzles.js  # キラータンゴパズル生成
+│   ├── validate-puzzles.js         # パズル整合性検証（npm run validate）
+│   ├── generate-daily-post.js      # X投稿用画像生成（npm run daily-post）
 │   └── generate-ogp.js             # OGP画像生成
 ├── docs/
-│   ├── feature-spec.md      # 本仕様書
+│   ├── feature-spec.md      # 本仕様書（タンゴ）
+│   ├── escape-spec.md       # エスケープ仕様書
+│   ├── lock-spec.md         # ロック仕様書
+│   ├── solver-logic.md      # ソルバー解説
 │   ├── marketing-guide.md   # マーケティング戦略
 │   ├── publish-guide.html   # 公開手順書
-│   └── solver-logic.md      # ソルバー解説
+│   ├── handover-*.md        # 引き継ぎ資料（時点スナップショット）
+│   └── local/               # 未公開マーケ素材（gitignore対象）
 └── tests/
     ├── unit/
     │   ├── game.test.js     # TangoGame ユニットテスト
     │   ├── solver.test.js   # TangoSolver ユニットテスト
+    │   ├── app.test.js      # app.js ユニットテスト
     │   └── puzzles.test.js  # パズルデータ整合性テスト
     ├── integration/
     │   └── puzzle-flow.test.js  # 実績・ゲームフロー統合テスト
@@ -457,61 +469,16 @@ const FEATURE_FLAGS = {
 
 ---
 
-## 16. 定時退社ロック（`lock/`）
+## 16. 姉妹ゲーム（別仕様書）
 
-**URL**: `teiji-tango.com/lock/`  
-**ソース**: `teiji-key/`（開発用）→ `lock/`（デプロイ用）にcpで同期  
-**絵文字**: 🔒
+タンゴと同じドメインで公開している姉妹ゲームの仕様は、それぞれ独立した仕様書に分離した。
 
-### ゲーム概要
-ブラック企業の出口暗証番号（3桁、各桁すべて異なる数字）を当てる数字野球ゲーム。試行回数無制限。
+| ゲーム | URL | 仕様書 |
+|--------|-----|--------|
+| 🕹️ 定時退社エスケープ | teiji-tango.com/escape/ | `docs/escape-spec.md` |
+| 🔒 定時退社ロック | teiji-tango.com/lock/ | `docs/lock-spec.md` |
 
-### コアロジック
-
-| 関数 | 内容 |
-|------|------|
-| `getRandomCode()` | 0〜9から重複なし3桁をランダム生成（毎プレーごと） |
-| `evaluate(secret, guess)` | Strike / Ball 判定。重複数字対応アルゴリズム実装済み |
-
-### Strike / Ball ルール
-- **S（ストライク）**: 数字・位置ともに正解
-- **B（ボール）**: 数字は答えに含まれるが位置が違う
-- 3S0B = 脱出成功
-
-### 結果ポップアップ
-解読ボタン押下後に画面中央にモーダル表示。
-
-| 要素 | 内容 |
-|------|------|
-| 入力数字 | 絵文字表示（`NUM_EMOJI`配列で変換） |
-| 結果 | `xS`（緑）`xB`（黄）のシンプル表示 |
-| ヒント | 1人称思考スタイル。S数・B数・0S0Bで内容変化（日英対応） |
-| 閉じ方 | ×ボタン / 欄外タップ / 次の数字入力で閉じる |
-| 正解時 | `🔓 OPEN!` 表示 → 1.4秒後自動クローズ → 脱出成功モーダル |
-
-### ヒントメッセージ仕様
-
-| 状態 | 日本語 | 英語 |
-|------|--------|------|
-| 0S0B | これらの数字はどこにも含まれないようだ... | None of these digits seem to be in the code... |
-| xS | `x`S…`x`つの数字の場所が正しいようだ... | `x`S…`x` digit(s) seem(s) to be in the right position... |
-| xB | `x`B…`x`つの数字が答えに含まれるようだ...ただ場所が違う | `x`B…`x` digit(s) are in the code, but in the wrong spot... |
-
-### メモ機能
-
-| 機能 | 内容 |
-|------|------|
-| 数字チップ（0〜9） | タップで「不明→✕ない→◯ある」の3状態サイクル |
-| 位置スロット（①②③） | タップでピッカー表示。候補数字を複数選択可。確定（緑）表示あり |
-
-### i18n
-- `LANG = navigator.language.startsWith('ja') ? 'ja' : 'en'` で自動判定
-- 言語トグルボタン（EN/JA）で手動切替
-- `TRANSLATIONS` オブジェクト + `applyLang()` 関数で全テキスト切替
-- 遊び方モーダルは `HOWTO_HTML.ja / .en` をJSで注入
-
-### シェア機能
-Xシェアボタン。`🔒 定時退社ロック / Teiji Lock`、`teiji-tango.com/lock/`、試行回数を含む文章を生成。
+いずれも開発ソースは姉妹フォルダ（`../teiji-escape/` / `../teiji-key/`）にあり、変更時は `escape/` / `lock/` へ cp してからコミットする（ルート `CLAUDE.md` 参照）。
 
 ---
 
